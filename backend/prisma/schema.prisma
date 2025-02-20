@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js" // aqui é o nome do gerador que será utilizado
+}
+
+datasource db {
+  provider = "mongodb" // aqui é o nome do provedor de banco de dados que será utilizado
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId // aqui é o campo que será utilizado como id
+  details    String
+  value      Float
+  type       String //"entrada" ou "saida"
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  @@map("customers")
+}
+
+// Este arquivo define o esquema do banco de dados usando Prisma ORM.
+// Ele especifica os modelos, campos e relacionamentos que serão utilizados
+// na aplicação de controle de finanças.
