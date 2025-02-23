@@ -7,7 +7,7 @@
     "start": "node src/server.ts"
   },
   "engines": {
-    "node": "16.x"
+    "node": "22.x"
   },
   "keywords": [],
   "author": "",
