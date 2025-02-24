@@ -6,9 +6,6 @@
     "dev": "tsx watch src/server.ts",
     "start": "node src/server.ts"
   },
-  "engines": {
-    "node": "22.x"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
