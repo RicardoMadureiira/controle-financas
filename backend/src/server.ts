@@ -9,13 +9,21 @@ app.setErrorHandler((error, request, reply) => {
 });
 
 const start = async () => {
-
-    await app.register(cors)
+    // Configuração de CORS ajustada para aceitar requisições do frontend
+    await app.register(cors, {
+        origin: ['http://localhost:5173', 'https://controle-financasrm.vercel.app/'], // Substitua pelo URL do seu frontend
+        methods: ['GET', 'POST', 'PUT', 'DELETE']
+    })
+    
     await app.register(routes);
     
-    try{
-        await app.listen({ port: 3000 });
-    }catch(err) {
+    try {
+        // Convertendo para número para garantir o tipo correto
+        const PORT = Number(process.env.PORT) || 3000;
+        await app.listen({ port: PORT, host: '0.0.0.0' });
+        console.log(`Server running on port ${PORT}`);
+    } catch(err) {
+        console.error(err);
         process.exit(1);
     }
 }
