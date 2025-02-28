@@ -8,7 +8,7 @@ app.setErrorHandler((error, request, reply) => {
     reply.code(400).send({ message: error.message });
 });
 
-// Rota de fallback para a raiz
+// aqui é a rota principal da aplicação que retorna uma mensagem de sucesso 
 app.get('/', async (request, reply) => {
     return { message: 'API de Controle Financeiro está funcionando!' };
 });
