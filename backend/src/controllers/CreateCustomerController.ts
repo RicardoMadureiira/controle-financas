@@ -15,6 +15,14 @@ const createCustomerSchema = z.object({
 class CreateCustomerController {
     async handle(request: FastifyRequest, reply: FastifyReply){
         try {
+            // Pré-processar o corpo da requisição para lidar com valores em formato brasileiro
+            const rawBody = request.body as { details: string; value: number | string; type: "entrada" | "saida" };
+
+             // Converter o valor de string com vírgula para número com ponto
+             if (typeof rawBody.value === 'string') {
+                rawBody.value = parseFloat(rawBody.value.replace(',', '.'));
+            }
+
             // Aqui esta sendo feita a validação dos dados da requisição
             const { details, value, type } = createCustomerSchema.parse(request.body);
             
