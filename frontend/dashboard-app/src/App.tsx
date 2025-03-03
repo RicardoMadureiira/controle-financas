@@ -159,12 +159,6 @@ export function App() {
             {/* Campo Valor */}
             <input
               type="number"
-              onInput={(number) => {
-                const input = number.target as HTMLInputElement; // pega o valor do input e converte para HTMLInputElement
-                if (input.value.length > 10) {
-                  input.value = input.value.slice(0, 10); // aqui limita o valor a 10 caracteres
-                } 
-              }}
               placeholder="Valor R$"
               className="md:col-span-1 px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring focus:ring-indigo-700 transition-all duration-300"
               ref={valueRef}
