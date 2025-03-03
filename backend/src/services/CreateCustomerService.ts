@@ -1,5 +1,4 @@
 import prismaClient from "../prisma";
-
 interface CreateCustomerProps{
     details: string;
     value: number;

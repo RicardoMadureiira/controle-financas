@@ -9,10 +9,9 @@ app.setErrorHandler((error, request, reply) => {
 });
 
 // aqui é a rota principal da aplicação que retorna uma mensagem de sucesso 
-app.get('/', async (request, reply) => {
-    return { message: 'API de Controle Financeiro está funcionando!' };
+app.setErrorHandler((error, request, reply) => {
+    reply.code(400).send({ message: error.message });
 });
-
 const start = async () => {
     // Registra o CORS - configuração permissiva para testes
     await app.register(cors, {
