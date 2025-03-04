@@ -159,6 +159,7 @@ export function App() {
             {/* Campo Valor */}
             <input
               type="number"
+              step={0.01}
               placeholder="Valor R$"
               className="md:col-span-1 px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring focus:ring-indigo-700 transition-all duration-300"
               ref={valueRef}
