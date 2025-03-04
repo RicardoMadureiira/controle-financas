@@ -5,11 +5,12 @@ import { z } from 'zod';
 // Aqui é criado um schema para validar os dados da requisição
 const createCustomerSchema = z.object({
     details: z.string().max(20, { message: "O campo 'details' deve ter no máximo 20 caracteres"}),
-    value: z.coerce.number().max(999999.99, "O valor máximo permitido é 999.999,99").positive("O valor deve ser positivo").refine((value) => {
-        // verificar se o valor tem no máximo 2 casas decimais
-        const decimalPlaces = (value.toString().split(".")[1] || '').length;
-        return decimalPlaces <= 2;
-    }, { message: "O valor deve ter no máximo 2 casas decimais" }),
+    value: z.coerce.number().max(999999.99, "O valor máximo permitido é 999.999,99").positive("O valor deve ser positivo")
+    .refine(
+        (val) => /^\d{1,6}(\.\d{1,2})?$/.test(val.toString()),
+        { message: "Formato inválido. Use até 6 dígitos e 2 casas decimais" }
+      ),
+     
     type: z.enum(["entrada", "saida"], { message: "O tipo deve ser 'entrada' ou 'saida'" }) 
 });
 
