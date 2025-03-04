@@ -5,7 +5,7 @@ import { z } from 'zod';
 // Aqui é criado um schema para validar os dados da requisição
 const createCustomerSchema = z.object({
     details: z.string().max(20, { message: "O campo 'details' deve ter no máximo 20 caracteres"}),
-    value: z.coerce.number().positive("O valor deve ser positivo").refine((value) => {
+    value: z.coerce.number().max(999999.99, "O valor máximo permitido é 999.999,99").positive("O valor deve ser positivo").refine((value) => {
         // verificar se o valor tem no máximo 2 casas decimais
         const decimalPlaces = (value.toString().split(".")[1] || '').length;
         return decimalPlaces <= 2;
