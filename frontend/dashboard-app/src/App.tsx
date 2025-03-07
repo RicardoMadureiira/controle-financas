@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, FormEvent } from "react";
 import { ArrowBigUp, ArrowBigDown, Trash2, DollarSign } from "lucide-react";
 import { api } from "./services/api";
-
 interface CustomerProps {
   id: string;
   details: string;
@@ -54,6 +53,11 @@ export function App() {
   }
 
   async function handleDelete(id: string) {
+    const confirmDelete = window.confirm(
+      "Tem certeza que deseja excluir essa transação?"
+    );
+    if (!confirmDelete) return;
+
     try {
       await api.delete("/customer", {
         params: {
@@ -65,7 +69,8 @@ export function App() {
       const allCustomers = customers.filter((customer) => customer.id !== id); // aqui filtramos os dados para remover o item que foi deletado
       setCustomers(allCustomers); // aqui atualizamos o estado customers
     } catch (error) {
-      console.log(error);
+      alert("Erro ao tentar excluir a transação. Tente novamente mais tarde!");
+      console.error("Erro ao deletar:", error);
     }
   }
 
@@ -80,6 +85,56 @@ export function App() {
     .reduce((acc, customer) => acc + customer.value, 0); // aqui somamos o valor de todas as saídas
 
   const saldoTotal = totalEntradas - totalSaidas; // aqui calculamos o saldo total
+
+  /////////////////////////////////////////////////////////////
+
+  //Validação dos valores de entrada
+  const handleChange = () => {
+    if (!valueRef.current) return;
+
+    // Remove caracteres que não são números ou ponto
+    let inputValue = valueRef.current.value.replace(/[^0-9.]/g, "");
+
+    // Limita número de caracteres
+    inputValue = inputValue.slice(0, 10);
+
+    // Garante que há apenas um ponto decimal e que ele não está no início
+    const parts = inputValue.split(".");
+    if (parts.length > 2) {
+      valueRef.current.value = parts[0] + "." + parts.slice(1).join(""); // Mantém apenas o primeiro ponto
+      return;
+    }
+
+    // Limita casas decimais
+    if (parts.length > 1) {
+      parts[1] = parts[1].slice(0, 2); // limitando casas decimais em 2
+    }
+
+    const formattedValue = parts.join(".");
+
+    // Atualiza o valor diretamente no ref
+    if (valueRef.current) {
+      valueRef.current.value = formattedValue;
+    }
+
+    return;
+  };
+
+  const FormatCurrencyBlur = () => {
+    if (!valueRef.current) {
+      alert("Preencha o campo valor!");
+      return;
+    }
+
+    // transformando string em numero float e substituindo virgula por ponto
+    const numericValue = parseFloat(valueRef.current.value.replace(",", "."));
+
+    // permite apenas valores acima de 0
+    if (isNaN(numericValue) || numericValue <= 0) {
+      alert("Digite um valor válido acima de 0!");
+      valueRef.current.value = "";
+    }
+  };
 
   return (
     <div className="text-gray-800 max-w-4xl mx-auto py-12 px-4">
@@ -159,8 +214,11 @@ export function App() {
             {/* Campo Valor */}
             <input
               type="text"
-              pattern="^\d+(\.\d{1,2})?$"
+              pattern="^\d+([.,]\d{1,2})?$"
               min={0}
+              maxLength={10}
+              onChange={handleChange}
+              onBlur={FormatCurrencyBlur}
               placeholder="Valor R$"
               className="md:col-span-1 px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring focus:ring-indigo-700 transition-all duration-300"
               ref={valueRef}
