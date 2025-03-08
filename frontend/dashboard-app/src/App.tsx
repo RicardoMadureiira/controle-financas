@@ -93,10 +93,10 @@ export function App() {
     if (!valueRef.current) return;
 
     // Remove caracteres que não são números ou ponto
-    let inputValue = valueRef.current.value.replace(/[^0-9.]/g, "");
+    let inputValue = valueRef.current.value.replace(/[^0-9.,]/g, "");
 
     // Limita número de caracteres
-    inputValue = inputValue.slice(0, 12);
+    inputValue = inputValue.slice(0, 10);
 
     // Garante que há apenas um ponto decimal e que ele não está no início
     const parts = inputValue.split(".");
