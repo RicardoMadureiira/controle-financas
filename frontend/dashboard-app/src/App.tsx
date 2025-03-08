@@ -216,7 +216,7 @@ export function App() {
               type="text"
               pattern="^\d+([.,]\d{1,2})?$"
               min={0}
-              maxLength={12}
+              maxLength={9}
               onChange={handleChange}
               onBlur={FormatCurrencyBlur}
               placeholder="Valor R$"
