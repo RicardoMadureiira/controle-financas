@@ -92,32 +92,33 @@ export function App() {
   const handleChange = () => {
     if (!valueRef.current) return;
 
-    // Remove caracteres que não são números ou ponto
-    let inputValue = valueRef.current.value.replace(/[^0-9.]/g, "");
+    // Remove caracteres que não são números, vírgula ou ponto
+    let inputValue = valueRef.current.value.replace(/[^0-9,.]/g, "");
 
-    // Limita número de caracteres
-    inputValue = inputValue.slice(0, 10);
+    // Substitui vírgula por ponto para padronizar o formato decimal
+    inputValue = inputValue.replace(",", ".");
 
-    // Garante que há apenas um ponto decimal e que ele não está no início
+    // Impede múltiplos pontos decimais
     const parts = inputValue.split(".");
     if (parts.length > 2) {
-      valueRef.current.value = parts[0] + "." + parts.slice(1).join(""); // Mantém apenas o primeiro ponto
-      return;
+      inputValue = parts[0] + "." + parts.slice(1).join(""); // Mantém apenas o primeiro ponto
     }
 
-    // Limita casas decimais
-    if (parts.length > 1) {
-      parts[1] = parts[1].slice(0, 2); // limitando casas decimais em 2
+    // Limita casas decimais a 2 dígitos
+    if (parts.length === 2) {
+      parts[1] = parts[1].slice(0, 2);
     }
 
-    const formattedValue = parts.join(".");
-
-    // Atualiza o valor diretamente no ref
-    if (valueRef.current) {
-      valueRef.current.value = formattedValue;
+    // Se começar com ponto, adiciona "0" antes
+    if (inputValue.startsWith(".")) {
+      inputValue = "0" + inputValue;
     }
 
-    return;
+    // Limita o número total de caracteres (incluindo decimais)
+    inputValue = inputValue.slice(0, 12);
+
+    // Atualiza o valor no input
+    valueRef.current.value = inputValue;
   };
 
   const FormatCurrencyBlur = () => {
