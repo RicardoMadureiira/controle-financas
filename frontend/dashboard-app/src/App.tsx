@@ -96,7 +96,7 @@ export function App() {
     let inputValue = valueRef.current.value.replace(/[^0-9.]/g, "");
 
     // Limita número de caracteres
-    inputValue = inputValue.slice(0, 10);
+    inputValue = inputValue.slice(0, 12);
 
     // Garante que há apenas um ponto decimal e que ele não está no início
     const parts = inputValue.split(".");
