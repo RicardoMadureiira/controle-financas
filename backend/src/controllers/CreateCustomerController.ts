@@ -7,8 +7,7 @@ const createCustomerSchema = z.object({
     details: z.string().max(20, { message: "O campo 'details' deve ter no máximo 20 caracteres"}),
     value: z.coerce.number().max(999999.99, "O valor máximo permitido é 999.999,99").positive("O valor deve ser positivo")
     .refine(
-        (val) => /^\d{1,6}(\.\d{1,2})?$/.test(val.toString()),
-        { message: "Formato inválido. Use até 6 dígitos e 2 casas decimais" }
+        (val) => /^\d{1,9}(\.\d{1,2})?$/.test(val.toString()), // aqui é feita a validação do formato do valor 
       ),
      
     type: z.enum(["entrada", "saida"], { message: "O tipo deve ser 'entrada' ou 'saida'" }) 
