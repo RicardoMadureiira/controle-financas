@@ -96,10 +96,10 @@ export function App() {
     let inputValue = valueRef.current.value.replace(/[^0-9.,]/g, "");
 
     // Limita número de caracteres
-    inputValue = inputValue.slice(0, 10);
+    inputValue = inputValue.slice(0, 12);
 
     // Garante que há apenas um ponto decimal e que ele não está no início
-    const parts = inputValue.split(".");
+    const parts = inputValue.split(/[.,]/);
     if (parts.length > 2) {
       valueRef.current.value = parts[0] + "." + parts.slice(1).join(""); // Mantém apenas o primeiro ponto
       return;
