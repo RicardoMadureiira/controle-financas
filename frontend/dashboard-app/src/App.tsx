@@ -49,7 +49,17 @@ export function App() {
     event.preventDefault(); // aqui previnimos que a página recarregue
 
     if (!detailsRef.current?.value || !valueRef.current?.value || !selected)
-      return toast.error("🚨 Preencha todos os campos!"); // aqui verificamos se os campos estão preenchidos
+      return toast.error("⚠️ Preencha todos os campos!", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Flip,
+      }); // aqui verificamos se os campos estão preenchidos
 
     // Faz a requisição para a API para adicionar uma nova transação
     const response = await api.post("/customer", {
@@ -82,10 +92,34 @@ export function App() {
 
       // Vai devolver todos os items que não tem o id que foi passado para deletar
       const allCustomers = customers.filter((customer) => customer.id !== id); // aqui filtramos os dados para remover o item que foi deletado
+
       setCustomers(allCustomers); // aqui atualizamos o estado customers
+
+      toast.success("✅ Transação excluída com sucesso!", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Flip,
+      });
     } catch (error) {
       toast.error(
-        "🚨 Erro ao tentar excluir a transação. Tente novamente mais tarde!"
+        "🚨 Erro ao tentar excluir a transação. Tente novamente mais tarde!",
+        {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Flip,
+        }
       );
       console.error("Erro ao deletar:", error);
     }
@@ -139,7 +173,17 @@ export function App() {
 
   const FormatCurrencyBlur = () => {
     if (!valueRef.current) {
-      toast.error("🚨 Preencha o campo valor!");
+      toast.error("❌ Preencha o campo valor!", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Flip,
+      });
       return;
     }
 
@@ -148,7 +192,17 @@ export function App() {
 
     // permite apenas valores acima de 0
     if (isNaN(numericValue) || numericValue <= 0) {
-      toast.error("🚨 Digite um valor válido acima de 0!");
+      toast.error("❌ Digite um valor válido acima de 0!", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Flip,
+      });
       valueRef.current.value = "";
     }
   };
