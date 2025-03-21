@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, FormEvent } from "react";
 import { ArrowBigUp, ArrowBigDown, Trash2, DollarSign } from "lucide-react";
 import { api } from "./services/api";
-import { toast, Flip } from "react-toastify";
+import { ToastContainer, toast, Flip } from "react-toastify";
 interface CustomerProps {
   id: string;
   details: string;
@@ -351,6 +351,7 @@ export function App() {
             value="Adicionar Transação"
             className="w-full px-4 py-3 bg-indigo-700 text-white font-bold rounded-lg hover:bg-indigo-900 transition"
           ></input>
+          <ToastContainer />
         </form>
 
         {/* Tabela de ebição de dados */}
