@@ -15,10 +15,7 @@ export function Footer() {
             Feito com <span className="text-red-500">❤️</span> por
             <span className="text-red-500 font-semibold">
               {" "}
-              <a
-                href="https://my-portfolio-sooty-two-74.vercel.app/"
-                target="_blank"
-              >
+              <a href="#" target="_blank">
                 Ricardo Madureira
               </a>
             </span>
@@ -27,16 +24,24 @@ export function Footer() {
 
         {/* Direita */}
         <div className="flex space-x-4 text-sm">
-          <a href="#" className="hover:text-white">
+          <a href="#" target="_blank" className="hover:text-white">
             Email
           </a>
-          <a href="#" className="hover:text-white">
+          <a href="#" target="_blank" className="hover:text-white">
             Portfolio
           </a>
-          <a href="#" className="hover:text-white">
+          <a
+            href="https://github.com/RicardoMadureiira"
+            target="_blank"
+            className="hover:text-white"
+          >
             Github
           </a>
-          <a href="#" className="hover:text-white">
+          <a
+            href="https://www.linkedin.com/in/ricardo-madureira-490022245/?trk=opento_sprofile_topcard"
+            target="_blank"
+            className="hover:text-white"
+          >
             LinkedIn
           </a>
         </div>

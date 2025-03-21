@@ -49,7 +49,7 @@ export function App() {
     event.preventDefault(); // aqui previnimos que a página recarregue
 
     if (!detailsRef.current?.value || !valueRef.current?.value || !selected)
-      return toast.error("⚠️ Preencha todos os campos!", {
+      return toast.error("Preencha todos os campos!", {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -95,7 +95,7 @@ export function App() {
 
       setCustomers(allCustomers); // aqui atualizamos o estado customers
 
-      toast.success("✅ Transação excluída com sucesso!", {
+      toast.success("Transação excluída com sucesso!", {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -108,7 +108,7 @@ export function App() {
       });
     } catch (error) {
       toast.error(
-        "🚨 Erro ao tentar excluir a transação. Tente novamente mais tarde!",
+        "Erro ao tentar excluir a transação. Tente novamente mais tarde!",
         {
           position: "bottom-right",
           autoClose: 5000,
@@ -173,7 +173,7 @@ export function App() {
 
   const FormatCurrencyBlur = () => {
     if (!valueRef.current) {
-      toast.error("❌ Preencha o campo valor!", {
+      toast.error("Preencha o campo valor!", {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -192,7 +192,7 @@ export function App() {
 
     // permite apenas valores acima de 0
     if (isNaN(numericValue) || numericValue <= 0) {
-      toast.error("❌ Digite um valor válido acima de 0!", {
+      toast.error("Digite um valor válido acima de 0!", {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,
