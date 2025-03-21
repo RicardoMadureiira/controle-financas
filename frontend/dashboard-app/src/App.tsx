@@ -12,7 +12,7 @@ interface CustomerProps {
 
 export function App() {
   const displayAlert = () => {
-    toast.success("🦄 Transação Adicionada!", {
+    toast.success("Transação Adicionada!", {
       position: "bottom-right",
       autoClose: 5000,
       hideProgressBar: false,
@@ -49,7 +49,7 @@ export function App() {
     event.preventDefault(); // aqui previnimos que a página recarregue
 
     if (!detailsRef.current?.value || !valueRef.current?.value || !selected)
-      return alert("Preencha todos os campos!"); // aqui verificamos se os campos estão preenchidos
+      return toast.error("🚨 Preencha todos os campos!"); // aqui verificamos se os campos estão preenchidos
 
     // Faz a requisição para a API para adicionar uma nova transação
     const response = await api.post("/customer", {
@@ -84,7 +84,9 @@ export function App() {
       const allCustomers = customers.filter((customer) => customer.id !== id); // aqui filtramos os dados para remover o item que foi deletado
       setCustomers(allCustomers); // aqui atualizamos o estado customers
     } catch (error) {
-      alert("Erro ao tentar excluir a transação. Tente novamente mais tarde!");
+      toast.error(
+        "🚨 Erro ao tentar excluir a transação. Tente novamente mais tarde!"
+      );
       console.error("Erro ao deletar:", error);
     }
   }
@@ -137,7 +139,7 @@ export function App() {
 
   const FormatCurrencyBlur = () => {
     if (!valueRef.current) {
-      alert("Preencha o campo valor!");
+      toast.error("🚨 Preencha o campo valor!");
       return;
     }
 
@@ -146,7 +148,7 @@ export function App() {
 
     // permite apenas valores acima de 0
     if (isNaN(numericValue) || numericValue <= 0) {
-      alert("Digite um valor válido acima de 0!");
+      toast.error("🚨 Digite um valor válido acima de 0!");
       valueRef.current.value = "";
     }
   };
