@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, FormEvent } from "react";
 import { ArrowBigUp, ArrowBigDown, Trash2, DollarSign } from "lucide-react";
 import { api } from "./services/api";
-import { ToastContainer, toast, Flip } from "react-toastify";
+import { toast, Flip } from "react-toastify";
 interface CustomerProps {
   id: string;
   details: string;
@@ -11,20 +11,6 @@ interface CustomerProps {
 } // aqui cria uma interface para tipar os dados que vamos receber da API
 
 export function App() {
-  const displayAlert = () => {
-    toast.success("Transação Adicionada!", {
-      position: "bottom-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: false,
-      pauseOnHover: false,
-      draggable: true,
-      progress: undefined,
-      theme: "dark",
-      transition: Flip,
-    });
-  };
-
   const [selected, setSelected] = useState<"entrada" | "saida" | null>(null); // aqui criamos um estado para arm azernar o tipo de transação que o usuário selecionou
 
   const [customers, setCustomers] = useState<CustomerProps[]>([]); // aqui criamos um estado para armazenar os dados da API
@@ -61,20 +47,52 @@ export function App() {
         transition: Flip,
       }); // aqui verificamos se os campos estão preenchidos
 
-    // Faz a requisição para a API para adicionar uma nova transação
-    const response = await api.post("/customer", {
-      details: detailsRef?.current.value,
-      value: parseFloat(valueRef?.current.value),
-      type: selected,
-    });
+    try {
+      // Faz a requisição para a API para adicionar uma nova transação
+      const response = await api.post("/customer", {
+        details: detailsRef?.current.value,
+        value: parseFloat(valueRef?.current.value),
+        type: selected,
+      });
 
-    // Adiciona a nova transação ao estado customers, mantendo as transações anteriores
-    setCustomers((allCustomers) => [...allCustomers, response.data]);
+      // Adiciona a nova transação ao estado customers, mantendo as transações anteriores
+      setCustomers((allCustomers) => [...allCustomers, response.data]);
 
-    // Limpa os campos de detalhes e valor
-    if (detailsRef.current) detailsRef.current.value = "";
-    if (valueRef.current) valueRef.current.value = "";
-    setSelected(null); // Reseta o tipo de transação selecionado
+      // Limpa os campos de detalhes e valor
+      if (detailsRef.current) detailsRef.current.value = "";
+      if (valueRef.current) valueRef.current.value = "";
+      setSelected(null); // Reseta o tipo de transação selecionado
+
+      // Exibe uma mensagem de sucesso
+      toast.success("Transação adicionada com sucesso!", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Flip,
+      });
+    } catch (error) {
+      // Exibe uma mensagem de erro em caso de falha na requisição
+      toast.error(
+        "Erro ao adicionar a transação. Tente novamente mais tarde!",
+        {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Flip,
+        }
+      );
+      console.error("Erro ao adicionar transação:", error);
+    }
   }
 
   async function handleDelete(id: string) {
@@ -331,10 +349,8 @@ export function App() {
           <input
             type="submit"
             value="Adicionar Transação"
-            onClick={displayAlert}
             className="w-full px-4 py-3 bg-indigo-700 text-white font-bold rounded-lg hover:bg-indigo-900 transition"
           ></input>
-          <ToastContainer />
         </form>
 
         {/* Tabela de ebição de dados */}
