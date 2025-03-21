@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, FormEvent } from "react";
 import { ArrowBigUp, ArrowBigDown, Trash2, DollarSign } from "lucide-react";
 import { api } from "./services/api";
+import { ToastContainer, toast, Flip } from "react-toastify";
 interface CustomerProps {
   id: string;
   details: string;
@@ -10,6 +11,20 @@ interface CustomerProps {
 } // aqui cria uma interface para tipar os dados que vamos receber da API
 
 export function App() {
+  const displayAlert = () => {
+    toast.success("🦄 Transação Adicionada!", {
+      position: "bottom-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+      transition: Flip,
+    });
+  };
+
   const [selected, setSelected] = useState<"entrada" | "saida" | null>(null); // aqui criamos um estado para arm azernar o tipo de transação que o usuário selecionou
 
   const [customers, setCustomers] = useState<CustomerProps[]>([]); // aqui criamos um estado para armazenar os dados da API
@@ -260,8 +275,10 @@ export function App() {
           <input
             type="submit"
             value="Adicionar Transação"
+            onClick={displayAlert}
             className="w-full px-4 py-3 bg-indigo-700 text-white font-bold rounded-lg hover:bg-indigo-900 transition"
           ></input>
+          <ToastContainer />
         </form>
 
         {/* Tabela de ebição de dados */}
