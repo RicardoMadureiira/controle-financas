@@ -4,10 +4,6 @@ import { routes } from "./routes";
 
 const app = Fastify({ logger: true });
 
-app.setErrorHandler((error, request, reply) => {
-    reply.code(400).send({ message: error.message });
-});
-
 // aqui é a rota principal da aplicação que retorna uma mensagem de sucesso 
 app.setErrorHandler((error, request, reply) => {
     reply.code(400).send({ message: error.message });
