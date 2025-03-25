@@ -26,7 +26,7 @@ const start = async () => {
         console.log(`Tentando iniciar o servidor na porta ${PORT}`);
         
         // Inicia o servidor
-        await app.listen({ port: PORT, host: '0.0.0.0' });
+        await app.listen({ port: PORT, host: '::' }); // IPV6 + IPV4
         
         console.log(`Server running on port ${PORT}`);
         console.log('Rotas registradas:', app.printRoutes());
