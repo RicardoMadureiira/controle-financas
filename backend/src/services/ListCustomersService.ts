@@ -1,12 +1,22 @@
 import prismaClient from "../prisma";
 
-class ListCustomersService{
-    async execute() {
-        
-        const customers = await prismaClient.customer.findMany() // pegar todos os clientes cadastrados no banco de dados
+interface ListCustomersProps {
+  anonUserId: string;
+}
 
-        return customers;
-    }
+class ListCustomersService {
+  async execute({ anonUserId }: ListCustomersProps) {
+    const customers = await prismaClient.customer.findMany({
+      where: {
+        anonUserId,
+      },
+      orderBy: {
+        created_at: 'desc',
+      }
+    });
+
+    return customers;
+  }
 }
 
 export { ListCustomersService };

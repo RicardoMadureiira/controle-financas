@@ -1,8 +1,11 @@
 import Fastify from "fastify";
 import cors from '@fastify/cors';
 import { routes } from "./routes";
+import fastifyCookie from 'fastify-cookie';
 
-const app = Fastify({ logger: true });
+const app = Fastify({ logger: true }); // Instanciando o servidor Fastify
+
+app.register(fastifyCookie); // Registro de plugin
 
 // aqui é a rota principal da aplicação que retorna uma mensagem de sucesso 
 app.setErrorHandler((error, request, reply) => {

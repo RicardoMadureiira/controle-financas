@@ -14,6 +14,7 @@ model Customer {
   type       String //"entrada" ou "saida"
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
+  anonUserId String
 
   @@map("customers")
 }

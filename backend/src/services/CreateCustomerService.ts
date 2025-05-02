@@ -3,11 +3,11 @@ interface CreateCustomerProps{
     details: string;
     value: number;
     type: string;
-
+    anonUserId: string;
 }
 
 class CreateCustomerService{
-    async execute( { details, value, type}: CreateCustomerProps) {
+    async execute( { details, value, type, anonUserId}: CreateCustomerProps) {
         
         if(!details || !value || !type){
             throw new Error("Preencha todos os campos");
@@ -17,7 +17,8 @@ class CreateCustomerService{
             data: {
                 details,
                 value,
-                type
+                type,
+                anonUserId,
             }
         })
 
