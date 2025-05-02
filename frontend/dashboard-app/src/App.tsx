@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, FormEvent } from "react";
 import { ArrowBigUp, ArrowBigDown, Trash2, DollarSign } from "lucide-react";
 import { api } from "./services/api";
 import { ToastContainer, toast, Flip } from "react-toastify";
+import { getAnonUserId } from "./utils/getAnonUserId";
 interface CustomerProps {
   id: string;
   details: string;
@@ -48,11 +49,13 @@ export function App() {
       }); // aqui verificamos se os campos estão preenchidos
 
     try {
+      const anonUserId = getAnonUserId(); // Pega o ID do usuário aqui
       // Faz a requisição para a API para adicionar uma nova transação
       const response = await api.post("/customer", {
         details: detailsRef?.current.value,
         value: parseFloat(valueRef?.current.value),
         type: selected,
+        anonUserId, // Envia o `anonUserId` na requisição
       });
 
       // Adiciona a nova transação ao estado customers, mantendo as transações anteriores
@@ -95,6 +98,7 @@ export function App() {
     }
   }
 
+  // Deletar uma transação
   async function handleDelete(id: string) {
     const confirmDelete = window.confirm(
       "Tem certeza que deseja excluir essa transação?"
