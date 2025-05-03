@@ -38,7 +38,7 @@ export function App() {
     if (!detailsRef.current?.value || !valueRef.current?.value || !selected)
       return toast.error("Preencha todos os campos!", {
         position: "bottom-right",
-        autoClose: 5000,
+        autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -69,7 +69,7 @@ export function App() {
       // Exibe uma mensagem de sucesso
       toast.success("Transação adicionada com sucesso!", {
         position: "bottom-right",
-        autoClose: 5000,
+        autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -84,7 +84,7 @@ export function App() {
         "Erro ao adicionar a transação. Tente novamente mais tarde!",
         {
           position: "bottom-right",
-          autoClose: 5000,
+          autoClose: 1000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -119,7 +119,7 @@ export function App() {
 
       toast.success("Transação excluída com sucesso!", {
         position: "bottom-right",
-        autoClose: 5000,
+        autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: false,
         pauseOnHover: false,
@@ -197,7 +197,7 @@ export function App() {
     if (!valueRef.current) {
       toast.error("Preencha o campo valor!", {
         position: "bottom-right",
-        autoClose: 5000,
+        autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -216,7 +216,7 @@ export function App() {
     if (isNaN(numericValue) || numericValue <= 0) {
       toast.error("Digite um valor válido acima de 0!", {
         position: "bottom-right",
-        autoClose: 5000,
+        autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
