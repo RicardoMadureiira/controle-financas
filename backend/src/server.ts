@@ -7,6 +7,10 @@ const app = Fastify({ logger: true }); // Instanciando o servidor Fastify
 
 app.register(fastifyCookie); // Registro de plugin
 
+app.get("/", async () => {
+  return { status: "API online" };
+});
+
 // aqui é a rota principal da aplicação que retorna uma mensagem de sucesso 
 app.setErrorHandler((error, request, reply) => {
     reply.code(400).send({ message: error.message });
