@@ -1,15 +1,30 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { ListCustomersService } from "../services/ListCustomersService";
 
-class ListCustomersController{
-    async handle(request: FastifyRequest, reply: FastifyReply){
-        const listCustomersService = new ListCustomersService();
+interface CustomRequest extends FastifyRequest {
+  cookies: {
+    anonUserId?: string;
+  };
+}
 
-        const customers = await listCustomersService.execute(); // Pegar todos os clientes cadastrados no banco de dados
+class ListCustomersController {
+  async handle(request: CustomRequest, reply: FastifyReply) {
 
-        reply.send(customers);
+    const { anonUserId } = request.cookies;
+
+    // VALIDAÇÃO 
+    if (!anonUserId) {
+      return reply.status(401).send({ error: "Usuário não identificado" });
     }
 
+    const listCustomersService = new ListCustomersService();
+
+    const customers = await listCustomersService.execute({
+      anonUserId
+    });
+
+    reply.send(customers);
+  }
 }
 
 export { ListCustomersController };
