@@ -1,15 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { ListCustomersService } from "../services/ListCustomersService";
 
-interface CustomRequest extends FastifyRequest {
-  cookies: {
-    anonUserId?: string;
-  };
-}
-
-import { FastifyRequest, FastifyReply } from "fastify";
-import { ListCustomersService } from "../services/ListCustomersService";
-
 class ListCustomersController {
   async handle(request: FastifyRequest, reply: FastifyReply) {
 
@@ -28,7 +19,5 @@ class ListCustomersController {
     return reply.send(customers);
   }
 }
-
-export { ListCustomersController };
 
 export { ListCustomersController };
