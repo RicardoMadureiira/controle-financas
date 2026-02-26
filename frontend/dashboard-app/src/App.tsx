@@ -292,6 +292,11 @@ async function handleDelete(id: string) {
           className="bg-white w-full rounded-2xl p-6 shadow-lg"
           onSubmit={handleSubmit}
         >
+
+           <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 text-sm rounded-lg p-3 mb-4">
+            Aviso: na primeira vez pode demorar alguns segundos para salvar, pois o servidor pode estar iniciando.
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
             {/* Campo de detalhes */}
             <input
