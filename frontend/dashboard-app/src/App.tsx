@@ -104,53 +104,46 @@ export function App() {
   }
 
   // Deletar uma transação
-  async function handleDelete(id: string) {
-    const confirmDelete = window.confirm(
-      "Tem certeza que deseja excluir essa transação?"
+  // Deletar uma transação
+async function handleDelete(id: string) {
+  const confirmDelete = window.confirm(
+    "Tem certeza que deseja excluir essa transação?"
+  );
+  if (!confirmDelete) return;
+
+  try {
+    const anonUserId = getAnonUserId();
+
+    await api.delete(`/customer/${id}`, {
+      params: { anonUserId },
+    });
+
+    // Remove do estado local
+    const allCustomers = customers.filter(
+      (customer) => customer.id !== id
     );
-    if (!confirmDelete) return;
 
-    try {
-      await api.delete("/customer", {
-        params: {
-          id: id,
-        },
-      });
+    setCustomers(allCustomers);
 
-      // Vai devolver todos os items que não tem o id que foi passado para deletar
-      const allCustomers = customers.filter((customer) => customer.id !== id); // aqui filtramos os dados para remover o item que foi deletado
-
-      setCustomers(allCustomers); // aqui atualizamos o estado customers
-
-      toast.success("Transação excluída com sucesso!", {
+    toast.success("Transação excluída com sucesso!", {
+      position: "bottom-right",
+      autoClose: 1000,
+      theme: "dark",
+      transition: Flip,
+    });
+  } catch (error) {
+    toast.error(
+      "Erro ao tentar excluir a transação. Tente novamente mais tarde!",
+      {
         position: "bottom-right",
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
+        autoClose: 2000,
         theme: "dark",
         transition: Flip,
-      });
-    } catch (error) {
-      toast.error(
-        "Erro ao tentar excluir a transação. Tente novamente mais tarde!",
-        {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-          transition: Flip,
-        }
-      );
-      console.error("Erro ao deletar:", error);
-    }
+      }
+    );
+    console.error("Erro ao deletar:", error);
   }
+}
 
   // Aqui calculamos o total de entradas
   const totalEntradas = customers
