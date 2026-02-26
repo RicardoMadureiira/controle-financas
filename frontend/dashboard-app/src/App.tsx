@@ -293,7 +293,7 @@ async function handleDelete(id: string) {
           onSubmit={handleSubmit}
         >
 
-           <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 text-sm rounded-lg p-3 mb-4">
+           <div className="bg-yellow-50 border border-yellow-300 text-red-800 text-center text-sm rounded-lg p-3 mb-4">
             Aviso: na primeira vez pode demorar alguns segundos para salvar, pois o servidor pode estar iniciando.
           </div>
           
