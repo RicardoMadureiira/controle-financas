@@ -7,12 +7,14 @@ interface CustomRequest extends FastifyRequest {
   };
 }
 
+import { FastifyRequest, FastifyReply } from "fastify";
+import { ListCustomersService } from "../services/ListCustomersService";
+
 class ListCustomersController {
-  async handle(request: CustomRequest, reply: FastifyReply) {
+  async handle(request: FastifyRequest, reply: FastifyReply) {
 
-    const { anonUserId } = request.cookies;
+    const { anonUserId } = request.query as { anonUserId: string };
 
-    // VALIDAÇÃO 
     if (!anonUserId) {
       return reply.status(401).send({ error: "Usuário não identificado" });
     }
@@ -23,8 +25,10 @@ class ListCustomersController {
       anonUserId
     });
 
-    reply.send(customers);
+    return reply.send(customers);
   }
 }
+
+export { ListCustomersController };
 
 export { ListCustomersController };
