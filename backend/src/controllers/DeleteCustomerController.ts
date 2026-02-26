@@ -1,16 +1,28 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { DeleteCustomerService } from "../services/DeleteCustomerService";
 
-class DeleteCustomerController{
-    async handle(request: FastifyRequest, reply: FastifyReply) {
-        const { id } = request.params as { id: string }; // aqui pegamos o id do cliente que queremos apagar
-        
-        const deleteCustomerService = new DeleteCustomerService();  // instanciar a classe de serviço
+class DeleteCustomerController {
+  async handle(request: FastifyRequest, reply: FastifyReply) {
 
-        const customer = await deleteCustomerService.execute( { id } ); // apagar um cliente do banco de dados
+    // id vem da rota
+    const { id } = request.params as { id: string };
 
-        return reply.send(customer); // retornar a resposta
+    // anonUserId vem da query (igual no list)
+    const { anonUserId } = request.query as { anonUserId: string };
+
+    if (!anonUserId) {
+      return reply.status(401).send({ error: "Usuário não identificado" });
     }
+
+    const deleteCustomerService = new DeleteCustomerService();
+
+    const customer = await deleteCustomerService.execute({
+      id,
+      anonUserId
+    });
+
+    return reply.send(customer);
+  }
 }
 
 export { DeleteCustomerController };
