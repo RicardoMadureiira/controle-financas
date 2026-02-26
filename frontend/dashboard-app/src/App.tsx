@@ -27,9 +27,14 @@ export function App() {
 
   // Função para carregar os dados da API
   async function loadCustomers() {
-    const response = await api.get("/listCustomers"); // aqui fazemos a requisição para a API
-    setCustomers(response.data); // aqui adicionamos os dados no estado setCustomers
-  }
+  const anonUserId = getAnonUserId();
+
+  const response = await api.get("/listCustomers", {
+    params: { anonUserId }
+  });
+
+  setCustomers(response.data);
+}
 
   // Função para adicionar uma nova transação
   async function handleSubmit(event: FormEvent) {
