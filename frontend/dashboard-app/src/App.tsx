@@ -245,10 +245,10 @@ export function App() {
               <h2 className="text-2xl text-gray-800 font-bold">Saldo Total</h2>
               <DollarSign className="text-green-500 w-8 h-8" />
             </div>
-            <div className="text-4xl">
-              R$ <span className={saldoTotal < 0 ? "text-red-500" : "text-green-400"}>
-                  {saldoTotal.toFixed(2)}
-                </span>{" "}
+            <div className="text-4xl font-bold">
+              <span className={saldoTotal < 0 ? "text-red-500" : "text-green-500"}>
+                {saldoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+              </span>
             </div>
           </div>
         </div> 
@@ -264,7 +264,7 @@ export function App() {
                 <ArrowBigUp className="text-green-500 w-8 h-8" />
               </div>
               <p className="text-3xl text-gray-900 font-bold">
-                R$ {totalEntradas.toFixed(2)}
+                {totalEntradas.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </p>
               <div className="mt-2 text-sm text-gray-500">
                 Total de receitas
@@ -282,7 +282,7 @@ export function App() {
                 <ArrowBigDown className="text-red-500 w-8 h-8" />
               </div>
               <p className="text-3xl text-gray-900 font-bold">
-                R$ {totalSaidas.toFixed(2)}
+                {totalSaidas.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </p>
               <div className="mt-2 text-sm text-gray-500">
                 Total de despesas
@@ -387,7 +387,9 @@ export function App() {
                   className="hover:bg-gray-100 transition-colors duration-300"
                 >
                   <td className="py-2 p-3"> {customer.details} </td>
-                  <td className="py-2"> R$ {customer.value.toFixed(2)} </td>
+                  <td className="py-2"> 
+                    {customer.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} 
+                  </td>
                   <td className="py-2">
                     <span
                       className={`text-sm font-medium rounded-full px-3 py-1 ${
