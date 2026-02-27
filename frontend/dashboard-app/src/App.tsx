@@ -292,7 +292,7 @@ export function App() {
 
       <div className="flex flex-col items-center">
         <h2 className="text-white text-lg mb-2">
-          Monitore suas entradas e saídas em tempo real
+          Monitore entradas e saídas em tempo real
         </h2>
         {/* Formulário */}
         <form
