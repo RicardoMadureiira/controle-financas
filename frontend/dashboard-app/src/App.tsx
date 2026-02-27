@@ -245,8 +245,10 @@ export function App() {
               <h2 className="text-2xl text-gray-800 font-bold">Saldo Total</h2>
               <DollarSign className="text-green-500 w-8 h-8" />
             </div>
-            <div className=" text-4xl">
-              R$ <span className="text-green-400">{saldoTotal.toFixed(2)}</span>{" "}
+            <div className="text-4xl">
+              R$ <span className={saldoTotal < 0 ? "text-red-500" : "text-green-400"}>
+                  {saldoTotal.toFixed(2)}
+                </span>{" "}
             </div>
           </div>
         </div> 
