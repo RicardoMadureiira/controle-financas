@@ -230,9 +230,15 @@ export function App() {
 
   return (
     <div className="text-gray-800 max-w-4xl mx-auto py-12 px-4">
-      <h1 className="text-4xl font-semibold text-center text-white mb-12">
-        Gestão Financeira
-      </h1>
+      {/* Centralizei e adicionei o Título e o Subtítulo explicativo abaixo */}
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-semibold text-white mb-2">
+          Controle de Fluxo de Caixa
+        </h1>
+        <p className="text-gray-300 text-lg">
+          Monitore suas entradas e saídas em tempo real
+        </p>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
         {/* saldo total */}
@@ -242,11 +248,11 @@ export function App() {
               <h2 className="text-2xl text-gray-800 font-bold">Saldo Total</h2>
               <DollarSign className="text-green-500 w-8 h-8" />
             </div>
-            <div className="text-4xl">
+            <div className=" text-4xl">
               R$ <span className="text-green-400">{saldoTotal.toFixed(2)}</span>{" "}
             </div>
           </div>
-        </div>
+        </div> {/* <--- FECHAMENTO DA DIV CORRIGIDO AQUI */}
 
         {/* Entradas */}
         <div className="md:col-span-6">
