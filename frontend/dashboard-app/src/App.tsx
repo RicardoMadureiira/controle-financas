@@ -105,7 +105,7 @@ export function App() {
     } finally {
       setLoading(false); // TERMINA O LOADING
     }
-  } // <--- CHAVE DE FECHAMENTO ADICIONADA AQUI PARA CORRIGIR O ESCOPO
+  }
 
   // Deletar uma transação
   async function handleDelete(id: string) {
@@ -233,11 +233,8 @@ export function App() {
       {/* Centralizei e adicionei o Título e o Subtítulo explicativo abaixo */}
       <div className="text-center mb-12">
         <h1 className="text-4xl font-semibold text-white mb-2">
-          Controle de Fluxo de Caixa
+          Organize suas Finanças
         </h1>
-        <p className="text-gray-300 text-lg">
-          Monitore suas entradas e saídas em tempo real
-        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
@@ -252,7 +249,7 @@ export function App() {
               R$ <span className="text-green-400">{saldoTotal.toFixed(2)}</span>{" "}
             </div>
           </div>
-        </div> {/* <--- FECHAMENTO DA DIV CORRIGIDO AQUI */}
+        </div> 
 
         {/* Entradas */}
         <div className="md:col-span-6">
@@ -294,6 +291,9 @@ export function App() {
       </div>
 
       <div className="flex flex-col items-center">
+        <p className="text-gray-300 text-lg">
+          Monitore suas entradas e saídas em tempo real
+        </p>
         {/* Formulário */}
         <form
           className="bg-white w-full rounded-2xl p-6 shadow-lg"
