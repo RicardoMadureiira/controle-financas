@@ -291,9 +291,9 @@ export function App() {
       </div>
 
       <div className="flex flex-col items-center">
-        <p className="text-gray-300 text-lg">
+        <h2 className="text-white text-lg mb-2">
           Monitore suas entradas e saídas em tempo real
-        </p>
+        </h2>
         {/* Formulário */}
         <form
           className="bg-white w-full rounded-2xl p-6 shadow-lg"
