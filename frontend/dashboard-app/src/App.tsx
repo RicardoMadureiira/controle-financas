@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, FormEvent } from "react";
-import { ArrowBigUp, ArrowBigDown, Trash2, DollarSign } from "lucide-react";
+import { ArrowBigUp, ArrowBigDown, Trash2, DollarSign, Loader2 } from "lucide-react";
 import { api } from "./services/api";
 import { ToastContainer, toast, Flip } from "react-toastify";
 import { getAnonUserId } from "./utils/getAnonUserId";
+
 interface CustomerProps {
   id: string;
   details: string;
@@ -16,7 +17,7 @@ export function App() {
 
   const [customers, setCustomers] = useState<CustomerProps[]>([]); // aqui criamos um estado para armazenar os dados da API
   // em <CustomerProps[]> estamos dizendo que o estado customers é um array de objetos do tipo CustomerProps
-
+  const [loading, setLoading] = useState(false);
   const detailsRef = useRef<HTMLInputElement | null>(null);
   const valueRef = useRef<HTMLInputElement | null>(null);
 
@@ -27,14 +28,14 @@ export function App() {
 
   // Função para carregar os dados da API
   async function loadCustomers() {
-  const anonUserId = getAnonUserId();
+    const anonUserId = getAnonUserId();
 
-  const response = await api.get("/listCustomers", {
-    params: { anonUserId }
-  });
+    const response = await api.get("/listCustomers", {
+      params: { anonUserId }
+    });
 
-  setCustomers(response.data);
-}
+    setCustomers(response.data);
+  }
 
   // Função para adicionar uma nova transação
   async function handleSubmit(event: FormEvent) {
@@ -54,6 +55,7 @@ export function App() {
       }); // aqui verificamos se os campos estão preenchidos
 
     try {
+      setLoading(true); // COMEÇA O LOADING
       const anonUserId = getAnonUserId(); // Pega o ID do usuário aqui
       // Faz a requisição para a API para adicionar uma nova transação
       const response = await api.post("/customer", {
@@ -100,50 +102,51 @@ export function App() {
         }
       );
       console.error("Erro ao adicionar transação:", error);
+    } finally {
+      setLoading(false); // TERMINA O LOADING
     }
-  }
+  } // <--- CHAVE DE FECHAMENTO ADICIONADA AQUI PARA CORRIGIR O ESCOPO
 
   // Deletar uma transação
-  // Deletar uma transação
-async function handleDelete(id: string) {
-  const confirmDelete = window.confirm(
-    "Tem certeza que deseja excluir essa transação?"
-  );
-  if (!confirmDelete) return;
-
-  try {
-    const anonUserId = getAnonUserId();
-
-    await api.delete(`/customer/${id}`, {
-      params: { anonUserId },
-    });
-
-    // Remove do estado local
-    const allCustomers = customers.filter(
-      (customer) => customer.id !== id
+  async function handleDelete(id: string) {
+    const confirmDelete = window.confirm(
+      "Tem certeza que deseja excluir essa transação?"
     );
+    if (!confirmDelete) return;
 
-    setCustomers(allCustomers);
+    try {
+      const anonUserId = getAnonUserId();
 
-    toast.success("Transação excluída com sucesso!", {
-      position: "bottom-right",
-      autoClose: 1000,
-      theme: "dark",
-      transition: Flip,
-    });
-  } catch (error) {
-    toast.error(
-      "Erro ao tentar excluir a transação. Tente novamente mais tarde!",
-      {
+      await api.delete(`/customer/${id}`, {
+        params: { anonUserId },
+      });
+
+      // Remove do estado local
+      const allCustomers = customers.filter(
+        (customer) => customer.id !== id
+      );
+
+      setCustomers(allCustomers);
+
+      toast.success("Transação excluída com sucesso!", {
         position: "bottom-right",
-        autoClose: 2000,
+        autoClose: 1000,
         theme: "dark",
         transition: Flip,
-      }
-    );
-    console.error("Erro ao deletar:", error);
+      });
+    } catch (error) {
+      toast.error(
+        "Erro ao tentar excluir a transação. Tente novamente mais tarde!",
+        {
+          position: "bottom-right",
+          autoClose: 2000,
+          theme: "dark",
+          transition: Flip,
+        }
+      );
+      console.error("Erro ao deletar:", error);
+    }
   }
-}
 
   // Aqui calculamos o total de entradas
   const totalEntradas = customers
@@ -156,8 +159,6 @@ async function handleDelete(id: string) {
     .reduce((acc, customer) => acc + customer.value, 0); // aqui somamos o valor de todas as saídas
 
   const saldoTotal = totalEntradas - totalSaidas; // aqui calculamos o saldo total
-
-  /////////////////////////////////////////////////////////////
 
   //Validação dos valores de entrada
   const handleChange = () => {
@@ -241,9 +242,9 @@ async function handleDelete(id: string) {
               <h2 className="text-2xl text-gray-800 font-bold">Saldo Total</h2>
               <DollarSign className="text-green-500 w-8 h-8" />
             </div>
-            <p className=" text-4xl">
+            <div className="text-4xl">
               R$ <span className="text-green-400">{saldoTotal.toFixed(2)}</span>{" "}
-            </p>
+            </div>
           </div>
         </div>
 
@@ -292,8 +293,7 @@ async function handleDelete(id: string) {
           className="bg-white w-full rounded-2xl p-6 shadow-lg"
           onSubmit={handleSubmit}
         >
-
-           <div className="bg-yellow-50 border border-yellow-300 text-red-800 text-center text-sm rounded-lg p-3 mb-4">
+          <div className="bg-yellow-50 border border-yellow-300 text-red-800 text-center text-sm rounded-lg p-3 mb-4">
             Aviso: na primeira vez pode demorar alguns segundos para salvar, pois o servidor pode estar iniciando.
           </div>
           
@@ -311,13 +311,11 @@ async function handleDelete(id: string) {
             <input
               type="text"
               pattern="^\d+([.,]\d{1,2})?$"
-              min={0}
-              maxLength={9}
-              onChange={handleChange}
-              onBlur={FormatCurrencyBlur}
               placeholder="Valor R$"
               className="md:col-span-1 px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring focus:ring-indigo-700 transition-all duration-300"
               ref={valueRef}
+              onChange={handleChange}
+              onBlur={FormatCurrencyBlur}
             />
 
             {/* Botões Entrada e Saída */}
@@ -331,7 +329,6 @@ async function handleDelete(id: string) {
                     ? "bg-green-500 text-white transition-transform duration-300 scale-105"
                     : "bg-gray-100 hover:bg-gray-200 transform duration-300"
                 }
-                
                 `}
               >
                 <ArrowBigUp />
@@ -353,16 +350,19 @@ async function handleDelete(id: string) {
           </div>
 
           {/* Botão Adicionar */}
-          <input
+          <button
             type="submit"
-            value="Adicionar Transação"
-            className="w-full px-4 py-3 bg-indigo-700 text-white font-bold rounded-lg hover:bg-indigo-900 transition"
-          ></input>
+            disabled={loading}
+            className="w-full px-4 py-3 bg-indigo-700 text-white font-bold rounded-lg hover:bg-indigo-900 transition flex items-center justify-center gap-2"
+          >
+            {loading && <Loader2 className="animate-spin" />}
+            {loading ? "Carregando..." : "Adicionar Transação"}
+          </button>
           <ToastContainer />
         </form>
 
-        {/* Tabela de ebição de dados */}
-        <div className="bg-white w-full mt-6 rounded-lg p-6 gap-10 shadow-lg">
+        {/* Tabela de exibição de dados */}
+        <div className="bg-white w-full mt-6 rounded-lg p-6 shadow-lg overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
               <tr className="text-left border-b border-gray-200 text-gray-700">
@@ -376,27 +376,29 @@ async function handleDelete(id: string) {
               {customers.map((customer) => (
                 <tr
                   key={customer.id}
-                  className="hover:bg-gray-200 rounded-4xl transition-transform duration-300"
+                  className="hover:bg-gray-100 transition-colors duration-300"
                 >
                   <td className="py-2 p-3"> {customer.details} </td>
-                  <td className="py-2 P-1"> R$ {customer.value.toFixed(2)} </td>
-                  <td
-                    className={`py-2 mt-2 text-sm font-medium text-green-800 bg-green-100 rounded-full inline-block px-2 ${
-                      customer.type === "saida"
-                        ? "bg-red-100 text-red-800"
-                        : "bg-green-100 text-grenn-800"
-                    }`}
-                  >
-                    {customer.type}
+                  <td className="py-2"> R$ {customer.value.toFixed(2)} </td>
+                  <td className="py-2">
+                    <span
+                      className={`text-sm font-medium rounded-full px-3 py-1 ${
+                        customer.type === "saida"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-green-100 text-green-800"
+                      }`}
+                    >
+                      {customer.type}
+                    </span>
                   </td>
 
                   <td className="py-2">
                     <button
                       type="button"
-                      className="text-red-500"
+                      className="text-red-500 hover:scale-110 transition-transform"
                       onClick={() => handleDelete(customer.id)}
                     >
-                      <Trash2 className="hover:scale-110" />
+                      <Trash2 size={20} />
                     </button>
                   </td>
                 </tr>
