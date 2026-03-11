@@ -1,8 +1,15 @@
 import { useState, useEffect, useRef, FormEvent } from "react";
-import { ArrowBigUp, ArrowBigDown, Trash2, DollarSign, Loader2 } from "lucide-react";
+import {
+  ArrowBigUp,
+  ArrowBigDown,
+  Trash2,
+  DollarSign,
+  Loader2,
+} from "lucide-react";
 import { api } from "./services/api";
 import { ToastContainer, toast, Flip } from "react-toastify";
 import { getAnonUserId } from "./utils/getAnonUserId";
+import { ModalDelete } from "./ModalDelete";
 
 interface CustomerProps {
   id: string;
@@ -20,6 +27,12 @@ export function App() {
   const [loading, setLoading] = useState(false);
   const detailsRef = useRef<HTMLInputElement | null>(null);
   const valueRef = useRef<HTMLInputElement | null>(null);
+  // Estados para controle do modal de exclusão
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{
+    id: string;
+    details: string;
+  } | null>(null);
 
   // useEffect é um hook do React que é executado sempre que o componente é montado ou atualizado
   useEffect(() => {
@@ -31,7 +44,7 @@ export function App() {
     const anonUserId = getAnonUserId();
 
     const response = await api.get("/listCustomers", {
-      params: { anonUserId }
+      params: { anonUserId },
     });
 
     setCustomers(response.data);
@@ -99,7 +112,7 @@ export function App() {
           progress: undefined,
           theme: "dark",
           transition: Flip,
-        }
+        },
       );
       console.error("Erro ao adicionar transação:", error);
     } finally {
@@ -108,29 +121,33 @@ export function App() {
   }
 
   // Deletar uma transação
-  async function handleDelete(id: string) {
-    const confirmDelete = window.confirm(
-      "Tem certeza que deseja excluir essa transação?"
-    );
-    if (!confirmDelete) return;
+  // 1. Função apenas para abrir o modal e salvar qual item será deletado
+  function handleOpenDeleteModal(id: string, details: string) {
+    setItemToDelete({ id, details });
+    setIsModalOpen(true);
+  }
+
+  // 2. Função que REALMENTE deleta (chamada pelo botão "Excluir" do Modal)
+  async function confirmDeletion() {
+    if (!itemToDelete) return;
 
     try {
       const anonUserId = getAnonUserId();
 
-      await api.delete(`/customer/${id}`, {
+      await api.delete(`/customer/${itemToDelete.id}`, {
         params: { anonUserId },
       });
 
       // Remove do estado local
       const allCustomers = customers.filter(
-        (customer) => customer.id !== id
+        (customer) => customer.id !== itemToDelete.id,
       );
-
       setCustomers(allCustomers);
 
       toast.success("Transação excluída com sucesso!", {
         position: "bottom-right",
         autoClose: 1000,
+        pauseOnHover: false,
         theme: "dark",
         transition: Flip,
       });
@@ -139,12 +156,17 @@ export function App() {
         "Erro ao tentar excluir a transação. Tente novamente mais tarde!",
         {
           position: "bottom-right",
-          autoClose: 2000,
+          autoClose: 1000,
+          pauseOnHover: false,
           theme: "dark",
           transition: Flip,
-        }
+        },
       );
       console.error("Erro ao deletar:", error);
+    } finally {
+      // Fecha o modal e limpa o estado independente de sucesso ou erro
+      setIsModalOpen(false);
+      setItemToDelete(null);
     }
   }
 
@@ -199,7 +221,7 @@ export function App() {
         autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: true,
-        pauseOnHover: true,
+        pauseOnHover: false,
         draggable: true,
         progress: undefined,
         theme: "dark",
@@ -218,7 +240,7 @@ export function App() {
         autoClose: 1000,
         hideProgressBar: false,
         closeOnClick: true,
-        pauseOnHover: true,
+        pauseOnHover: false,
         draggable: true,
         progress: undefined,
         theme: "dark",
@@ -228,46 +250,130 @@ export function App() {
     }
   };
 
+  // Função para formatar a data de forma relativa (Hoje, Ontem ou data formatada)
+  const formatRelativeDate = (dateString: string | Date) => {
+    const date = new Date(dateString);
+    const now = new Date();
+
+    // Zeramos as horas para comparar apenas os dias
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const compareDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+    );
+
+    if (compareDate.getTime() === today.getTime()) {
+      return "Hoje";
+    } else if (compareDate.getTime() === yesterday.getTime()) {
+      return "Ontem";
+    } else {
+      // Se for mais antigo, mostra a data formatada (ex: 08 mar.)
+      return date.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "short",
+      });
+    }
+  };
+
   return (
     <div className="text-gray-800 max-w-4xl mx-auto py-12 px-4">
-      {/* Centralizei e adicionei o Título e o Subtítulo explicativo abaixo */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-semibold text-white mb-2">
-          Organize suas Finanças
+      <div className="text-center mb-16 space-y-4">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+          Organize suas{" "}
+          <span className=" bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+            Finanças
+          </span>
         </h1>
+        <p className="text-zinc-400 text-sm md:text-base max-w-md mx-auto leading-relaxed">
+          Monitore seus gastos com uma interface intuitiva.
+        </p>
+        {/* Detalhe visual: uma linha sutil abaixo do texto */}
+        <div className="w-12 h-1 bg-emerald-500 mx-auto rounded-full mt-4" />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
         {/* saldo total */}
-        <div className="md:col-span-12 bg-white rounded-2xl p-8 shadow-xl transform hover:scale-[1.02] transition-transform duration-300">
-          <div className="bg-white">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl text-gray-800 font-bold">Saldo Total</h2>
-              <DollarSign className="text-green-500 w-8 h-8" />
+        <div className="md:col-span-12 bg-zinc-900 border border-zinc-800 rounded-[2rem] p-10 shadow-2xl transform hover:scale-[1.01] transition-all duration-300 group overflow-hidden relative">
+          <div
+            className={`absolute -top-24 -right-24 w-64 h-64 rounded-full blur-[100px] opacity-20 transition-colors duration-500 ${
+              saldoTotal < 0 ? "bg-rose-500" : "bg-emerald-500"
+            }`}
+          />
+
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col">
+                <span className="text-zinc-500 text-xs font-bold uppercase tracking-[0.3em]">
+                  Balanço Geral
+                </span>
+                <h2 className="text-2xl text-white font-black mt-1">
+                  Saldo Total
+                </h2>
+              </div>
+              <div
+                className={`p-3 rounded-2xl transition-colors ${
+                  saldoTotal < 0 ? "bg-rose-500/10" : "bg-emerald-500/10"
+                }`}
+              >
+                <DollarSign
+                  className={`w-8 h-8 ${
+                    saldoTotal < 0 ? "text-rose-500" : "text-emerald-500"
+                  }`}
+                />
+              </div>
             </div>
-            <div className="text-4xl font-bold">
-              <span className={saldoTotal < 0 ? "text-red-500" : "text-green-500"}>
-                {saldoTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-              </span>
+
+            <div className="flex items-baseline gap-2">
+              <p
+                className={`text-6xl font-black tracking-tighter transition-colors duration-500 ${
+                  saldoTotal < 0 ? "text-rose-500" : "text-emerald-400"
+                }`}
+              >
+                {saldoTotal.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </p>
+            </div>
+
+            {/* Uma linha de progresso */}
+            <div className="w-full h-[2px] bg-zinc-800 mt-8 rounded-full overflow-hidden">
+              <div
+                className={`h-full transition-all duration-1000 ${
+                  saldoTotal < 0 ? "bg-rose-500 w-1/3" : "bg-emerald-500 w-full"
+                }`}
+              />
             </div>
           </div>
-        </div> 
+        </div>
 
         {/* Entradas */}
         <div className="md:col-span-6">
-          <div className="bg-white rounded-2xl p-6 shadow-lg transform hover:scale-105 transition-transform duration-300 h-full">
-            <div className="flex flex-col items-start justify-between mb-3">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8 hover:border-emerald-500/50 transition-all duration-300 group transform hover:scale-105 shadow-lg cursor-pointer">
+            <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between w-full">
-                <div className="text-xl font-semibold text-green-500">
+                <span className="text-zinc-500 text-xs font-bold uppercase tracking-[0.2em]">
                   Entradas
+                </span>
+                <div className="bg-emerald-500/10 p-2 rounded-xl group-hover:scale-110 transition-transform">
+                  <ArrowBigUp className="text-emerald-500 w-6 h-6" />
                 </div>
-                <ArrowBigUp className="text-green-500 w-8 h-8" />
               </div>
-              <p className="text-3xl text-gray-900 font-bold">
-                {totalEntradas.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-              </p>
-              <div className="mt-2 text-sm text-gray-500">
-                Total de receitas
+
+              <div>
+                <p className="text-4xl text-white font-black tracking-tighter">
+                  {totalEntradas.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </p>
+                <div className="mt-1 text-[10px] text-zinc-600 font-medium uppercase tracking-widest">
+                  Total de receitas
+                </div>
               </div>
             </div>
           </div>
@@ -275,83 +381,96 @@ export function App() {
 
         {/* Saidas */}
         <div className="md:col-span-6">
-          <div className="bg-white rounded-2xl p-6 shadow-lg transform hover:scale-105 transition-transform duration-300 h-full">
-            <div className="flex flex-col items-start justify-between mb-3">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8 hover:border-rose-500/50 transition-all duration-300 group shadow-lg transform hover:scale-105 cursor-pointer">
+            <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between w-full">
-                <div className="text-xl font-semibold text-red-500">Saídas</div>
-                <ArrowBigDown className="text-red-500 w-8 h-8" />
+                <span className="text-zinc-500 text-xs font-bold uppercase tracking-[0.2em]">
+                  Saídas
+                </span>
+                <div className="bg-rose-500/10 p-2 rounded-xl group-hover:scale-110 transition-transform">
+                  <ArrowBigDown className="text-rose-500 w-6 h-6" />
+                </div>
               </div>
-              <p className="text-3xl text-gray-900 font-bold">
-                {totalSaidas.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-              </p>
-              <div className="mt-2 text-sm text-gray-500">
-                Total de despesas
+
+              <div>
+                <p className="text-4xl text-white font-black tracking-tighter">
+                  {totalSaidas.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </p>
+                <div className="mt-1 text-[10px] text-zinc-600 font-medium uppercase tracking-widest">
+                  Total de despesas
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col items-center">
-        <h2 className="text-white text-lg mb-2">
-          Monitore entradas e saídas em tempo real
+      <div className="flex flex-col items-center w-full max-w-5xl mx-auto">
+        <h2 className="text-zinc-500 text-xs font-bold uppercase tracking-[0.3em] mb-6">
+          Monitoramento em Tempo Real
         </h2>
+
         {/* Formulário */}
         <form
-          className="bg-white w-full rounded-2xl p-6 shadow-lg"
+          className="bg-zinc-900/50 border border-zinc-800 w-full rounded-[2rem] p-8 shadow-2xl backdrop-blur-sm"
           onSubmit={handleSubmit}
         >
-          <div className="bg-yellow-50 border border-yellow-300 text-red-800 text-center text-sm rounded-lg p-3 mb-4">
-            Aviso: na primeira vez pode demorar alguns segundos para salvar, pois o servidor pode estar iniciando.
+          {/* Aviso Sutil em vez do Amarelão */}
+          <div className="flex items-center gap-3 bg-emerald-500/5 border border-emerald-500/10 text-emerald-500/80 text-xs rounded-xl p-4 mb-8 justify-center tracking-wide">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>
+              Sincronizando com o servidor... (Pode demorar alguns segundos na
+              primeira vez)
+            </span>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
-            {/* Campo de detalhes */}
+
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+            {/* Inputs com estilo 'Focus Glow' */}
             <input
               type="text"
               maxLength={20}
-              placeholder="Detalhes..."
-              className="md:col-span-2 px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-indigo-700 transition-all duration-300"
+              placeholder="O que você comprou/recebeu?"
+              className="md:col-span-2 bg-black/40 border border-zinc-800 px-5 py-3 rounded-2xl outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 text-white transition-all placeholder:text-zinc-600"
               ref={detailsRef}
             />
 
-            {/* Campo Valor */}
             <input
               type="text"
               pattern="^\d+([.,]\d{1,2})?$"
-              placeholder="Valor R$"
-              className="md:col-span-1 px-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring focus:ring-indigo-700 transition-all duration-300"
+              placeholder="R$ 0,00"
+              className="md:col-span-1 bg-black/40 border border-zinc-800 px-5 py-3 rounded-2xl outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/5 text-white transition-all placeholder:text-zinc-600"
               ref={valueRef}
               onChange={handleChange}
               onBlur={FormatCurrencyBlur}
             />
 
-            {/* Botões Entrada e Saída */}
-            <div className="md:col-span-2 flex items-center gap-5">
+            {/* Botões de Seleção */}
+            <div className="md:col-span-2 flex items-center gap-3">
               <button
                 type="button"
                 onClick={() => setSelected("entrada")}
-                className={`flex items-center justify-center px-4 py-2 text-gray-500 font-semibold rounded-lg transition
-                ${
+                className={`flex-1 cursor-pointer hover:scale-105 flex items-center justify-center gap-2 py-3 rounded-2xl font-bold transition-all ${
                   selected === "entrada"
-                    ? "bg-green-500 text-white transition-transform duration-300 scale-105"
-                    : "bg-gray-100 hover:bg-gray-200 transform duration-300"
-                }
-                `}
+                    ? "bg-emerald-500 text-black scale-105 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                    : "bg-zinc-800/50 text-zinc-500 hover:bg-zinc-800"
+                }`}
               >
-                <ArrowBigUp />
+                <ArrowBigUp className="w-5 h-5" />
                 Entrada
               </button>
               <button
                 type="button"
                 onClick={() => setSelected("saida")}
-                className={`flex items-center justify-center px-4 py-2 gap-1 text-gray-500 font-semibold rounded-lg shadow transition ${
+                className={`flex-1 cursor-pointer hover:scale-105 flex items-center justify-center gap-2 py-3 rounded-2xl font-bold transition-all ${
                   selected === "saida"
-                    ? "bg-red-500 text-white transition-transform duration-300 scale-105"
-                    : "bg-gray-100 hover:bg-gray-200 transform duration-300"
+                    ? "bg-rose-500 text-white scale-105 shadow-[0_0_20px_rgba(244,63,94,0.3)]"
+                    : "bg-zinc-800/50 text-zinc-500 hover:bg-zinc-800"
                 }`}
               >
-                <ArrowBigDown />
+                <ArrowBigDown className="w-5 h-5" />
                 Saída
               </button>
             </div>
@@ -361,61 +480,91 @@ export function App() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-3 bg-indigo-700 text-white font-bold rounded-lg hover:bg-indigo-900 transition flex items-center justify-center gap-2"
+            className="w-full cursor-pointer hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(16,185,129,0.2)]
+               duration-300 py-4 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-emerald-400 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50"
           >
-            {loading && <Loader2 className="animate-spin" />}
-            {loading ? "Carregando..." : "Adicionar Transação"}
+            {loading ? (
+              <Loader2 className="animate-spin w-5 h-5" />
+            ) : (
+              "Confirmar Lançamento"
+            )}
           </button>
-          <ToastContainer />
         </form>
 
-        {/* Tabela de exibição de dados */}
-        <div className="bg-white w-full mt-6 rounded-lg p-6 shadow-lg overflow-x-auto">
-          <table className="w-full table-auto">
-            <thead>
-              <tr className="text-left border-b border-gray-200 text-gray-700">
-                <th className="pb-2 p-2">Detalhes</th>
-                <th className="pb-2">Valor</th>
-                <th className="pb-2">Tipo</th>
-                <th className="pb-2">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="text-stone-900">
-              {customers.map((customer) => (
-                <tr
-                  key={customer.id}
-                  className="hover:bg-gray-100 transition-colors duration-300"
-                >
-                  <td className="py-2 p-3"> {customer.details} </td>
-                  <td className="py-2"> 
-                    {customer.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} 
-                  </td>
-                  <td className="py-2">
-                    <span
-                      className={`text-sm font-medium rounded-full px-3 py-1 ${
-                        customer.type === "saida"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-green-100 text-green-800"
-                      }`}
-                    >
-                      {customer.type}
-                    </span>
-                  </td>
+        {/* Lista de Transações */}
+        <div className="w-full mt-12 space-y-4">
+          <h3 className="text-white font-bold text-xl mb-6 flex items-center gap-2">
+            <span className="w-2 h-6 bg-emerald-500 rounded-full"></span>
+            Últimas Movimentações
+          </h3>
 
-                  <td className="py-2">
-                    <button
-                      type="button"
-                      className="text-red-500 hover:scale-110 transition-transform"
-                      onClick={() => handleDelete(customer.id)}
-                    >
-                      <Trash2 size={20} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="grid gap-3">
+            {customers.map((customer) => (
+              <div
+                key={customer.id}
+                className="bg-zinc-900/40 border border-zinc-800/50 p-5 rounded-2xl flex items-center justify-between group hover:bg-zinc-800/50 transition-all"
+              >
+                <div className="flex items-center gap-5">
+                  <div
+                    className={`p-3 rounded-xl ${
+                      customer.type === "saida"
+                        ? "bg-rose-500/10 text-rose-500"
+                        : "bg-emerald-500/10 text-emerald-500"
+                    }`}
+                  >
+                    {customer.type === "saida" ? (
+                      <ArrowBigDown size={20} />
+                    ) : (
+                      <ArrowBigUp size={20} />
+                    )}
+                  </div>
+                  <div>
+                    <div>
+                      <p className="text-white font-semibold">
+                        {customer.details}
+                      </p>
+                      <p className="text-zinc-500 text-[10px] uppercase tracking-wider">
+                        {formatRelativeDate(customer.created_at)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-8">
+                  <p
+                    className={`text-lg font-bold ${
+                      customer.type === "saida"
+                        ? "text-rose-500/60"
+                        : "text-emerald-400"
+                    }`}
+                  >
+                    {customer.type === "saida" ? "-" : "+"}{" "}
+                    {customer.value.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </p>
+                  <button
+                    type="button"
+                    className="text-zinc-600 hover:text-rose-500 transition-colors p-2"
+                    onClick={() =>
+                      handleOpenDeleteModal(customer.id, customer.details)
+                    }
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+        <ToastContainer />
+        <ModalDelete
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={confirmDeletion}
+          title={itemToDelete?.details || ""}
+        />
       </div>
     </div>
   );
