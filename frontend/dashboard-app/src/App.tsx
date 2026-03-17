@@ -22,6 +22,8 @@ interface CustomerProps {
 export function App() {
   const [selected, setSelected] = useState<"entrada" | "saida" | null>(null); // aqui criamos um estado para arm azernar o tipo de transação que o usuário selecionou
 
+  const [isServerReady, setIsServerReady] = useState(false);
+
   const [customers, setCustomers] = useState<CustomerProps[]>([]); // aqui criamos um estado para armazenar os dados da API
   // em <CustomerProps[]> estamos dizendo que o estado customers é um array de objetos do tipo CustomerProps
   const [loading, setLoading] = useState(false);
@@ -41,13 +43,20 @@ export function App() {
 
   // Função para carregar os dados da API
   async function loadCustomers() {
-    const anonUserId = getAnonUserId();
+    try {
+      const anonUserId = getAnonUserId();
 
-    const response = await api.get("/listCustomers", {
-      params: { anonUserId },
-    });
+      const response = await api.get("/listCustomers", {
+        params: { anonUserId },
+      });
 
-    setCustomers(response.data);
+      setCustomers(response.data);
+      setIsServerReady(true);
+    } catch (error) {
+      console.error("Erro ao despertar o servidor:", error);
+      // Se der erro, mantemos como false para o usuário saber que ainda não conectou
+      setIsServerReady(false);
+    }
   }
 
   // Função para adicionar uma nova transação
@@ -120,14 +129,13 @@ export function App() {
     }
   }
 
-  // Deletar uma transação
-  // 1. Função apenas para abrir o modal e salvar qual item será deletado
+  // Função  para abrir o modal e salvar qual item será deletado
   function handleOpenDeleteModal(id: string, details: string) {
     setItemToDelete({ id, details });
     setIsModalOpen(true);
   }
 
-  // 2. Função que REALMENTE deleta (chamada pelo botão "Excluir" do Modal)
+  // Função que deleta (chamada pelo botão "Excluir" do Modal)
   async function confirmDeletion() {
     if (!itemToDelete) return;
 
@@ -164,7 +172,7 @@ export function App() {
       );
       console.error("Erro ao deletar:", error);
     } finally {
-      // Fecha o modal e limpa o estado independente de sucesso ou erro
+      // Fecha o modal e limpa o estado
       setIsModalOpen(false);
       setItemToDelete(null);
     }
@@ -255,7 +263,7 @@ export function App() {
     const date = new Date(dateString);
     const now = new Date();
 
-    // Zeramos as horas para comparar apenas os dias
+    // Aqui zeramos as horas para comparar apenas os dias
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
@@ -291,7 +299,7 @@ export function App() {
         <p className="text-zinc-400 text-sm md:text-base max-w-md mx-auto leading-relaxed">
           Monitore seus gastos com uma interface intuitiva.
         </p>
-        {/* Detalhe visual: uma linha sutil abaixo do texto */}
+
         <div className="w-12 h-1 bg-emerald-500 mx-auto rounded-full mt-4" />
       </div>
 
@@ -340,7 +348,7 @@ export function App() {
               </p>
             </div>
 
-            {/* Uma linha de progresso */}
+            {/* linha de progresso */}
             <div className="w-full h-[2px] bg-zinc-800 mt-8 rounded-full overflow-hidden">
               <div
                 className={`h-full transition-all duration-1000 ${
@@ -418,17 +426,27 @@ export function App() {
           className="bg-zinc-900/50 border border-zinc-800 w-full rounded-[2rem] p-8 shadow-2xl backdrop-blur-sm"
           onSubmit={handleSubmit}
         >
-          {/* Aviso Sutil em vez do Amarelão */}
+          {/* Aviso */}
           <div className="flex items-center gap-3 bg-emerald-500/5 border border-emerald-500/10 text-emerald-500/80 text-xs rounded-xl p-4 mb-8 justify-center tracking-wide">
-            <Loader2 className="w-4 h-4 animate-spin" />
-            <span>
-              Sincronizando com o servidor... (Pode demorar alguns segundos na
-              primeira vez)
-            </span>
+            {isServerReady ? (
+              <>
+                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
+                  Servidor Online e Sincronizado
+                </span>
+              </>
+            ) : (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>
+                  Sincronizando com o servidor... (Pode demorar alguns segundos
+                  na primeira vez)
+                </span>
+              </>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-            {/* Inputs com estilo 'Focus Glow' */}
             <input
               type="text"
               maxLength={20}
@@ -447,7 +465,6 @@ export function App() {
               onBlur={FormatCurrencyBlur}
             />
 
-            {/* Botões de Seleção */}
             <div className="md:col-span-2 flex items-center gap-3">
               <button
                 type="button"
