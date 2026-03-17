@@ -54,7 +54,7 @@ export function App() {
       setIsServerReady(true);
     } catch (error) {
       console.error("Erro ao despertar o servidor:", error);
-      // Se der erro, mantemos como false para o usuário saber que ainda não conectou
+      // Se der erro, mantem como false e manda mensagem no console
       setIsServerReady(false);
     }
   }
@@ -129,7 +129,7 @@ export function App() {
     }
   }
 
-  // Função  para abrir o modal e salvar qual item será deletado
+  // Função para abrir o modal para o item que será deletado
   function handleOpenDeleteModal(id: string, details: string) {
     setItemToDelete({ id, details });
     setIsModalOpen(true);
@@ -337,7 +337,7 @@ export function App() {
 
             <div className="flex items-baseline gap-2">
               <p
-                className={`text-6xl font-black tracking-tighter transition-colors duration-500 ${
+                className={`text-3xl sm:text-5xl md:text-6xl font-black tracking-tighter transition-colors duration-500 ${
                   saldoTotal < 0 ? "text-rose-500" : "text-emerald-400"
                 }`}
               >
@@ -519,11 +519,15 @@ export function App() {
             {customers.map((customer) => (
               <div
                 key={customer.id}
-                className="bg-zinc-900/40 border border-zinc-800/50 p-5 rounded-2xl flex items-center justify-between group hover:bg-zinc-800/50 transition-all"
+                // Ajuste: Adicionei 'flex-wrap' e 'gap-4' para o mobile
+                className="bg-zinc-900/40 border border-zinc-800/50 p-4 md:p-5 rounded-2xl flex flex-wrap md:flex-nowrap items-center justify-between group hover:bg-zinc-800/50 transition-all gap-4"
               >
-                <div className="flex items-center gap-5">
+                <div className="flex items-center gap-4 flex-1 min-w-0">
+                  {" "}
+                  {/* min-w-0 permite que o texto encurte */}
                   <div
-                    className={`p-3 rounded-xl ${
+                    className={`p-3 rounded-xl shrink-0 ${
+                      // shrink-0 impede o ícone de amassar
                       customer.type === "saida"
                         ? "bg-rose-500/10 text-rose-500"
                         : "bg-emerald-500/10 text-emerald-500"
@@ -535,21 +539,24 @@ export function App() {
                       <ArrowBigUp size={20} />
                     )}
                   </div>
-                  <div>
-                    <div>
-                      <p className="text-white font-semibold">
-                        {customer.details}
-                      </p>
-                      <p className="text-zinc-500 text-[10px] uppercase tracking-wider">
-                        {formatRelativeDate(customer.created_at)}
-                      </p>
-                    </div>
+                  {/* Container do texto */}
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className="text-white font-semibold truncate"
+                      title={customer.details}
+                    >
+                      {customer.details}
+                    </p>
+                    <p className="text-zinc-500 text-[10px] uppercase tracking-wider">
+                      {formatRelativeDate(customer.created_at)}
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-8">
+                {/* Container do Valor e Lixeira */}
+                <div className="flex items-center justify-between md:justify-end gap-4 md:gap-8 w-full md:w-auto border-t md:border-none border-zinc-800/50 pt-3 md:pt-0">
                   <p
-                    className={`text-lg font-bold ${
+                    className={`text-lg font-bold whitespace-nowrap ${
                       customer.type === "saida"
                         ? "text-rose-500/60"
                         : "text-emerald-400"
@@ -563,7 +570,7 @@ export function App() {
                   </p>
                   <button
                     type="button"
-                    className="text-zinc-600 hover:text-rose-500 transition-colors p-2"
+                    className="text-zinc-600 hover:text-rose-500 transition-colors p-2 shrink-0"
                     onClick={() =>
                       handleOpenDeleteModal(customer.id, customer.details)
                     }
