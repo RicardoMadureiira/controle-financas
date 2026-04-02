@@ -22,6 +22,7 @@ Este é o meu projeto de maior escala até o momento, onde desenvolvi uma aplica
 - **Node.js**: Ambiente de execução para o servidor.
 - **Prisma ORM**: Modelagem de dados e integração eficiente com o banco.
 - **MongoDB Atlas**: Banco de dados NoSQL escalável na nuvem.
+- **Zod**: Validação de Schema e tipagem de dados no servidor.
 - **Insomnia**: Testes de rotas e validação da API.
 
 ### Deploy
