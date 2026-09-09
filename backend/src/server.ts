@@ -1,11 +1,8 @@
 import Fastify from "fastify";
 import cors from '@fastify/cors';
 import { routes } from "./routes";
-import fastifyCookie from 'fastify-cookie';
 
 const app = Fastify({ logger: true }); // Instanciando o servidor Fastify
-
-app.register(fastifyCookie); // Registro de plugin
 
 app.get("/", async () => {
   return { status: "API online" };
@@ -18,7 +15,8 @@ app.setErrorHandler((error, request, reply) => {
 const start = async () => {
     // Registra o CORS - configuração permissiva para testes
     await app.register(cors, {
-        origin: true, // permite todas as origens durante o desenvolvimento
+        origin: (process.env.CORS_ORIGIN || 'http://localhost:5173,https://controle-financasrm.vercel.app')
+          .split(',').map((origin) => origin.trim()),
         methods: ['GET', 'POST', 'PUT', 'DELETE']
     });
     

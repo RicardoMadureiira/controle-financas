@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { DeleteCustomerService } from "../services/DeleteCustomerService";
+import { anonUserIdSchema } from "../schemas/transaction";
 
 class DeleteCustomerController {
   async handle(request: FastifyRequest, reply: FastifyReply) {
@@ -10,7 +11,7 @@ class DeleteCustomerController {
     // anonUserId vem da query (igual no list)
     const { anonUserId } = request.query as { anonUserId: string };
 
-    if (!anonUserId) {
+    if (!anonUserId || !anonUserIdSchema.safeParse(anonUserId).success) {
       return reply.status(401).send({ error: "Usuário não identificado" });
     }
 

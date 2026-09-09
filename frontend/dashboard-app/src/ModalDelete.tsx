@@ -24,7 +24,7 @@ export function ModalDelete({
       />
 
       {/* Conteúdo do Modal */}
-      <div className="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-[2rem] p-8 shadow-2xl relative z-10 animate-in fade-in zoom-in duration-300">
+      <div role="dialog" aria-modal="true" aria-labelledby="delete-title" className="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-[2rem] p-8 shadow-2xl relative z-10 animate-in fade-in zoom-in duration-300">
         <button
           onClick={onClose}
           className="absolute right-6 top-6 text-zinc-500 hover:text-white transition-colors"
@@ -37,7 +37,7 @@ export function ModalDelete({
             <Trash2 className="text-emerald-500 w-8 h-8" />
           </div>
 
-          <h2 className="text-xl font-bold text-white mb-2">
+          <h2 id="delete-title" className="text-xl font-bold text-white mb-2">
             Excluir Transação
           </h2>
           <p className="text-zinc-400 text-sm leading-relaxed mb-8">

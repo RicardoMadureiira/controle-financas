@@ -19,6 +19,10 @@ class DeleteCustomerService{
       }
     });
 
+    if (customer.count === 0) {
+      throw new Error("Movimentação não encontrada");
+    }
+
     return { message: "Transação apagada com sucesso!" };
   }
 }

@@ -15,7 +15,11 @@ class ListCustomersService {
       }
     });
 
-    return customers;
+    return customers.map((customer) => ({
+      ...customer,
+      clientId: customer.clientId ?? customer.id,
+      category: customer.category ?? "Outros",
+    }));
   }
 }
 

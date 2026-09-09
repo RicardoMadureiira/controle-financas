@@ -1,19 +1,22 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { CreateCustomerService } from "../services/CreateCustomerService";
 import { z } from 'zod';
+import { anonUserIdSchema } from '../schemas/transaction';
 
 const createCustomerSchema = z.object({
   details: z.string().max(20),
   value: z.coerce.number().positive(),
   type: z.enum(["entrada", "saida"]),
-  anonUserId: z.string()
+  anonUserId: anonUserIdSchema,
+  clientId: z.string().uuid().optional(),
+  category: z.string().trim().min(1).max(30).default("Outros")
 });
 
 class CreateCustomerController {
   async handle(request: FastifyRequest, reply: FastifyReply){
     try {
 
-      const { details, value, type, anonUserId } =
+      const { details, value, type, anonUserId, clientId, category } =
         createCustomerSchema.parse(request.body);
 
       const customerService = new CreateCustomerService();
@@ -22,7 +25,9 @@ class CreateCustomerController {
         details,
         value,
         type,
-        anonUserId
+        anonUserId,
+        clientId,
+        category
       });
 
       return reply.send(customer);
