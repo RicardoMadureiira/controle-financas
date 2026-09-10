@@ -48,7 +48,7 @@ export function App() {
     <header className="text-center mb-12"><h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">Organize suas <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Finanças</span></h1><p className="text-zinc-400 mt-4">Seus lançamentos disponíveis mesmo sem internet.</p></header>
     <SyncIndicator pending={pending} isSyncing={isSyncing} lastSyncedAt={lastSyncedAt} onRetry={() => void sync()} />
     <DashboardSummary income={totals.income} expense={totals.expense} />
-    <TransactionForm editing={null} onSave={save} onCancel={() => setEditing(null)} />
+    <TransactionForm editing={null} onSave={save} />
     <FiltersPanel filters={filters} categories={categories} onChange={setFilters} />
     <MonthlyChart transactions={filtered} />
     <TransactionList transactions={filtered} onEdit={setEditing} onDelete={setDeleting} />

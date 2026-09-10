@@ -29,8 +29,8 @@ export function EditTransactionModal({ transaction, onSave, onClose }: EditTrans
     <button type="button" aria-label="Fechar edição" className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
     <div role="dialog" aria-modal="true" aria-labelledby="edit-transaction-title" className="relative z-10 w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-[2rem] shadow-2xl">
       <h2 id="edit-transaction-title" className="sr-only">Editar movimentação</h2>
-      <button type="button" aria-label="Fechar" onClick={onClose} className="absolute right-6 top-6 z-20 text-zinc-500 hover:text-white"><X size={20} /></button>
-      <TransactionForm editing={transaction} onSave={onSave} onCancel={onClose} />
+      <button type="button" aria-label="Cancelar edição" title="Cancelar edição" onClick={onClose} className="absolute right-4 top-4 z-20 flex h-11 w-11 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500"><X size={22} /></button>
+      <TransactionForm editing={transaction} onSave={onSave} />
     </div>
   </div>;
 }

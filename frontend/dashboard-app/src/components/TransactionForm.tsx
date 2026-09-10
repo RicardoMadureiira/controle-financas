@@ -4,7 +4,7 @@ import type { Transaction, TransactionDraft, TransactionType } from "../types";
 
 const emptyDraft: TransactionDraft = { details: "", value: 0, type: "saida", category: "Outros" };
 
-export function TransactionForm({ editing, onSave, onCancel }: { editing: Transaction | null; onSave: (draft: TransactionDraft) => void; onCancel: () => void }) {
+export function TransactionForm({ editing, onSave }: { editing: Transaction | null; onSave: (draft: TransactionDraft) => void }) {
   const [draft, setDraft] = useState<TransactionDraft>(emptyDraft);
   const [customCategory, setCustomCategory] = useState("");
   const isCustom = !DEFAULT_CATEGORIES.includes(draft.category);
@@ -20,7 +20,7 @@ export function TransactionForm({ editing, onSave, onCancel }: { editing: Transa
 
   const field = "bg-black/40 border border-zinc-800 px-4 py-3 rounded-xl outline-none focus:border-emerald-500 text-white";
   return <form onSubmit={submit} className="bg-zinc-900/60 border border-zinc-800 rounded-[2rem] p-6 md:p-8 mb-8">
-    <div className="flex justify-between items-center mb-5"><h2 className="text-white font-bold">{editing ? "Editar movimentação" : "Nova movimentação"}</h2>{editing && <button type="button" onClick={onCancel} className="text-sm text-zinc-400 hover:text-white">Cancelar edição</button>}</div>
+    <div className="flex items-center mb-5 pr-12"><h2 className="text-white font-bold">{editing ? "Editar movimentação" : "Nova movimentação"}</h2></div>
     <div className="grid md:grid-cols-2 gap-4">
       <input className={field} maxLength={60} required placeholder="Descrição" value={draft.details} onChange={(e) => setDraft({ ...draft, details: e.target.value })} />
       <input className={field} required min="0.01" step="0.01" type="number" placeholder="Valor" value={draft.value || ""} onChange={(e) => setDraft({ ...draft, value: Number(e.target.value) })} />
