@@ -4,7 +4,7 @@ export const anonUserIdSchema = z.string().uuid();
 
 export const transactionInputSchema = z.object({
   clientId: z.string().uuid(),
-  details: z.string().trim().min(1).max(20),
+  details: z.string().trim().min(1).max(60),
   value: z.coerce.number().positive().finite(),
   type: z.enum(["entrada", "saida"]),
   category: z.string().trim().min(1).max(30).default("Outros"),

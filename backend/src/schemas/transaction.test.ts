@@ -27,3 +27,15 @@ test("rejeita lote maior que cem operações", () => {
   }));
   assert.equal(syncSchema.safeParse({ anonUserId, operations }).success, false);
 });
+
+test("aceita até sessenta caracteres na descrição e rejeita acima do limite", () => {
+  const payload = (details: string) => ({
+    anonUserId,
+    operations: [{ operation: "upsert", transaction: {
+      clientId, details, value: 10, type: "saida",
+      category: "Outros", updatedAt: "2026-01-01T00:00:00.000Z",
+    } }],
+  });
+  assert.equal(syncSchema.safeParse(payload("a".repeat(60))).success, true);
+  assert.equal(syncSchema.safeParse(payload("a".repeat(61))).success, false);
+});

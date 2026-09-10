@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { anonUserIdSchema } from '../schemas/transaction';
 
 const createCustomerSchema = z.object({
-  details: z.string().max(20),
+  details: z.string().trim().min(1).max(60),
   value: z.coerce.number().positive(),
   type: z.enum(["entrada", "saida"]),
   anonUserId: anonUserIdSchema,
