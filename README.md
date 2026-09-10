@@ -5,7 +5,9 @@ Este é o meu projeto de maior escala até o momento, onde desenvolvi uma aplica
 ---
 
 ## 🚀 Demonstração
-**Acesse o projeto online:** [https://controle-financasrm.vercel.app/](https://controle-financasrm.vercel.app/)
+**Acesse o projeto online:** [https://controle-financas-rm.vercel.app/](https://controle-financas-rm.vercel.app/)
+
+> Consulte [AUTHENTICATION.md](./AUTHENTICATION.md) para entender o fluxo de login Google, sessão e migração dos dados anônimos.
 
 ---
 

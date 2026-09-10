@@ -12,7 +12,7 @@ export const transactionInputSchema = z.object({
 });
 
 export const syncSchema = z.object({
-  anonUserId: anonUserIdSchema,
+  anonUserId: anonUserIdSchema.optional(),
   operations: z.array(z.discriminatedUnion("operation", [
     z.object({
       operation: z.literal("upsert"),

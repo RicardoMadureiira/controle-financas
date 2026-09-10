@@ -4,19 +4,19 @@ interface CreateCustomerProps{
     details: string;
     value: number;
     type: string;
-    anonUserId: string;
+    userId: string;
     clientId?: string;
     category?: string;
 }
 
 class CreateCustomerService{
-    async execute( { details, value, type, anonUserId, clientId = randomUUID(), category = "Outros"}: CreateCustomerProps) {
+    async execute( { details, value, type, userId, clientId = randomUUID(), category = "Outros"}: CreateCustomerProps) {
         
         if(!details || !value || !type){
             throw new Error("Preencha todos os campos");
         }
 
-        const existing = await prismaClient.customer.findFirst({ where: { anonUserId, clientId } });
+        const existing = await prismaClient.customer.findFirst({ where: { userId, clientId } });
         if (existing) return existing;
 
         const customer = await prismaClient.customer.create({
@@ -24,7 +24,7 @@ class CreateCustomerService{
                 details,
                 value,
                 type,
-                anonUserId,
+                userId,
                 clientId,
                 category,
             }

@@ -1,6 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { DeleteCustomerService } from "../services/DeleteCustomerService";
-import { anonUserIdSchema } from "../schemas/transaction";
 
 class DeleteCustomerController {
   async handle(request: FastifyRequest, reply: FastifyReply) {
@@ -8,18 +7,11 @@ class DeleteCustomerController {
     // id vem da rota
     const { id } = request.params as { id: string };
 
-    // anonUserId vem da query (igual no list)
-    const { anonUserId } = request.query as { anonUserId: string };
-
-    if (!anonUserId || !anonUserIdSchema.safeParse(anonUserId).success) {
-      return reply.status(401).send({ error: "Usuário não identificado" });
-    }
-
     const deleteCustomerService = new DeleteCustomerService();
 
     const customer = await deleteCustomerService.execute({
       id,
-      anonUserId
+      userId: request.authUser!.id
     });
 
     return reply.send(customer);

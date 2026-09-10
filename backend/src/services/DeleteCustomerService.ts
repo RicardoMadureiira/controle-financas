@@ -2,11 +2,11 @@ import prismaClient from "../prisma";
 
 interface DeleteCustomerProps{
   id: string;
-  anonUserId: string;
+  userId: string;
 }
 
 class DeleteCustomerService{
-  async execute({ id, anonUserId }: DeleteCustomerProps) {
+  async execute({ id, userId }: DeleteCustomerProps) {
 
     if(!id){
       throw new Error("ID inválido!");
@@ -15,7 +15,7 @@ class DeleteCustomerService{
     const customer = await prismaClient.customer.deleteMany({
       where: {
         id,
-        anonUserId
+        userId
       }
     });
 

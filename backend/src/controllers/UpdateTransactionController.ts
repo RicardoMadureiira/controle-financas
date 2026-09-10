@@ -1,18 +1,16 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import prismaClient from "../prisma";
-import { anonUserIdSchema, transactionInputSchema } from "../schemas/transaction";
+import { transactionInputSchema } from "../schemas/transaction";
 
-const updateSchema = transactionInputSchema.omit({ clientId: true, updatedAt: true }).extend({
-  anonUserId: anonUserIdSchema,
-});
+const updateSchema = transactionInputSchema.omit({ clientId: true, updatedAt: true });
 
 class UpdateTransactionController {
   async handle(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string };
       const input = updateSchema.parse(request.body);
-      const existing = await prismaClient.customer.findFirst({ where: { id, anonUserId: input.anonUserId } });
+      const existing = await prismaClient.customer.findFirst({ where: { id, userId: request.authUser!.id } });
       if (!existing) return reply.status(404).send({ error: "Movimentação não encontrada" });
       const transaction = await prismaClient.customer.update({
         where: { id },

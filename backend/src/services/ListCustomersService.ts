@@ -1,14 +1,12 @@
 import prismaClient from "../prisma";
 
-interface ListCustomersProps {
-  anonUserId: string;
-}
+interface ListCustomersProps { userId: string; }
 
 class ListCustomersService {
-  async execute({ anonUserId }: ListCustomersProps) {
+  async execute({ userId }: ListCustomersProps) {
     const customers = await prismaClient.customer.findMany({
       where: {
-        anonUserId,
+        userId,
       },
       orderBy: {
         created_at: 'desc',

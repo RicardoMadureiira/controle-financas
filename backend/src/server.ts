@@ -1,8 +1,10 @@
 import Fastify from "fastify";
 import cors from '@fastify/cors';
 import { routes } from "./routes";
+import cookie from "@fastify/cookie";
 
 const app = Fastify({ logger: true }); // Instanciando o servidor Fastify
+app.register(cookie);
 
 app.get("/", async () => {
   return { status: "API online" };
@@ -17,7 +19,8 @@ const start = async () => {
     await app.register(cors, {
         origin: (process.env.CORS_ORIGIN || 'http://localhost:5173,https://controle-financasrm.vercel.app')
           .split(',').map((origin) => origin.trim()),
-        methods: ['GET', 'POST', 'PUT', 'DELETE']
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        credentials: true
     });
     
     // Registra as rotas do seu arquivo routes.ts

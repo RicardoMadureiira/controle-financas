@@ -1,0 +1,6 @@
+import { AlertTriangle, X } from "lucide-react";
+
+export function DeleteAccountModal({ open, busy, onClose, onConfirm }: { open: boolean; busy: boolean; onClose: () => void; onConfirm: () => void }) {
+  if (!open) return null;
+  return <div className="fixed inset-0 z-50 flex items-center justify-center p-4"><button aria-label="Fechar" className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} /><div role="dialog" aria-modal="true" aria-labelledby="delete-account-title" className="relative bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8 max-w-md w-full text-center"><button aria-label="Fechar" onClick={onClose} className="absolute right-5 top-5 text-zinc-500"><X /></button><AlertTriangle className="text-rose-400 mx-auto mb-5" size={40} /><h2 id="delete-account-title" className="text-white font-bold text-xl">Excluir sua conta?</h2><p className="text-zinc-400 text-sm mt-3">Todas as movimentações serão apagadas permanentemente. Essa ação não pode ser desfeita.</p><div className="grid grid-cols-2 gap-3 mt-7"><button disabled={busy} onClick={onClose} className="bg-zinc-800 text-white rounded-xl py-3">Cancelar</button><button disabled={busy} onClick={onConfirm} className="bg-rose-500 text-white rounded-xl py-3 font-bold disabled:opacity-50">{busy ? "Excluindo..." : "Excluir tudo"}</button></div></div></div>;
+}

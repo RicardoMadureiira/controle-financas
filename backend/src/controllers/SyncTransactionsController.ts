@@ -7,7 +7,7 @@ class SyncTransactionsController {
   async handle(request: FastifyRequest, reply: FastifyReply) {
     try {
       const input = syncSchema.parse(request.body);
-      const result = await new SyncTransactionsService().execute(input);
+      const result = await new SyncTransactionsService().execute(request.authUser!.id, input);
       return reply.send(result);
     } catch (error) {
       if (error instanceof z.ZodError) return reply.status(400).send(error.flatten());

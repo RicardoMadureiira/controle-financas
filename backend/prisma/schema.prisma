@@ -14,11 +14,35 @@ model Customer {
   type       String //"entrada" ou "saida"
   created_at DateTime? @default(now())
   updated_at DateTime? @default(now())
-  anonUserId String
+  anonUserId String?
+  userId     String?   @db.ObjectId
   clientId   String?
   category   String?   @default("Outros")
 
   @@map("customers")
+}
+
+model User {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  googleSub  String   @unique
+  email      String
+  name       String
+  avatarUrl  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  tokenHash String   @unique
+  userId    String   @db.ObjectId
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("sessions")
 }
 
 // Este arquivo define o esquema do banco de dados usando Prisma ORM.

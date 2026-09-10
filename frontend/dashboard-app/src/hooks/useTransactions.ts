@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "../services/api";
 import type { Transaction, TransactionDraft } from "../types";
-import { getAnonUserId } from "../utils/getAnonUserId";
 import { loadTransactions, saveTransactions } from "../utils/storage";
 import { buildSyncOperations, mergeAfterSync } from "../utils/sync";
 
@@ -16,8 +15,8 @@ interface ServerTransaction {
   updated_at?: string;
 }
 
-export function useTransactions() {
-  const [transactions, setTransactions] = useState<Transaction[]>(loadTransactions);
+export function useTransactions(userId: string) {
+  const [transactions, setTransactions] = useState<Transaction[]>(() => loadTransactions(userId));
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
   const transactionsRef = useRef(transactions);
@@ -25,12 +24,12 @@ export function useTransactions() {
 
   const commit = useCallback((next: Transaction[]) => {
     transactionsRef.current = next;
-    saveTransactions(next);
+    saveTransactions(userId, next);
     setTransactions(next);
-  }, []);
+  }, [userId]);
 
   const sync = useCallback(async () => {
-    if (!navigator.onLine || syncingRef.current) return;
+    if (!navigator.onLine || syncingRef.current) return false;
     syncingRef.current = true;
     setIsSyncing(true);
     const current = transactionsRef.current;
@@ -40,7 +39,7 @@ export function useTransactions() {
     try {
       const operations = buildSyncOperations(pending);
       const response = await api.post<{ transactions: ServerTransaction[] }>("/transactions/sync", {
-        anonUserId: getAnonUserId(), operations,
+        operations,
       });
       const canonical = response.data.transactions.map((item): Transaction => ({
         id: item.id,
@@ -56,8 +55,10 @@ export function useTransactions() {
       }));
       commit(mergeAfterSync(pending, transactionsRef.current, canonical));
       setLastSyncedAt(new Date().toISOString());
+      return true;
     } catch {
       commit(transactionsRef.current.map((item) => item.pendingOperation ? { ...item, syncStatus: "error" } : item));
+      return false;
     } finally {
       syncingRef.current = false;
       setIsSyncing(false);

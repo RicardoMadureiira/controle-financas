@@ -3,13 +3,13 @@ import { SyncInput } from "../schemas/transaction";
 import { randomUUID } from "crypto";
 
 class SyncTransactionsService {
-  async execute({ anonUserId, operations }: SyncInput) {
+  async execute(userId: string, { operations }: SyncInput) {
     const acknowledgements: Array<{ clientId: string; status: "applied" | "ignored" }> = [];
 
     for (const item of operations) {
       const clientId = item.operation === "upsert" ? item.transaction.clientId : item.clientId;
       const existing = await prismaClient.customer.findFirst({
-        where: { anonUserId, clientId },
+        where: { userId, clientId },
       });
 
       if (item.operation === "delete") {
@@ -19,7 +19,7 @@ class SyncTransactionsService {
           continue;
         }
         if (existing) {
-          await prismaClient.customer.deleteMany({ where: { anonUserId, clientId: item.clientId } });
+          await prismaClient.customer.deleteMany({ where: { userId, clientId: item.clientId } });
         }
         acknowledgements.push({ clientId, status: "applied" });
         continue;
@@ -37,7 +37,7 @@ class SyncTransactionsService {
         type: item.transaction.type,
         category: item.transaction.category,
         clientId: item.transaction.clientId,
-        anonUserId,
+        userId,
         updated_at: incomingDate,
       };
 
@@ -50,7 +50,7 @@ class SyncTransactionsService {
     }
 
     const legacyTransactions = await prismaClient.customer.findMany({
-      where: { anonUserId, clientId: null },
+      where: { userId, clientId: null },
     });
     for (const legacy of legacyTransactions) {
       await prismaClient.customer.update({
@@ -60,7 +60,7 @@ class SyncTransactionsService {
     }
 
     const transactions = await prismaClient.customer.findMany({
-      where: { anonUserId },
+      where: { userId },
       orderBy: { created_at: "desc" },
     });
 
